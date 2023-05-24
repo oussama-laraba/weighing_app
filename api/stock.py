@@ -34,27 +34,3 @@ def get_stockable_product(fileds = [] ):
 
 
     return product_list
-
-
-connection = api_connection()
-product_dict = {}
-
-stock_location= get_stock_location()
-# print(connection.get_internal_locations_records( ['id','display_name','name']))
-
-
-print(get_stock_location())
-# print(stock_location[0][0])
-
-#print(f'\nFirst Two stock locations:\n {internal_location_ids} \n\n')
-
-
-
-# stockable_products = connection.get_stockable_products()​
-# stockable_products_keys = (list (stockable_products[0]))[0:7]
-# stockable_product_1 = stockable_products[0]
-# stockable_product_1_limited_cols = {key: stockable_product_1[key] for key in stockable_products_keys }
-# print(stockable_product_1_limited_cols, '\n\n')
-# print('\n\n',stockable_products, '\n\n')
-# val_dict = {  'product_id': 8 , 'product_qty':20, 'company_id':1}
-# connection.create_product_lot(val_dict)

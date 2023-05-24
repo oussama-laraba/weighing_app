@@ -116,7 +116,7 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.location.set("location 1")
         self.product.set("produit 1")
 
-        # self.product_quantity.configure(state='normal')
+        self.product_quantity.configure(state='normal')
         self.product_quantity.delete(0,tk.END)
         self.product_quantity.configure(state='disabled')
 
