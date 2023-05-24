@@ -16,7 +16,7 @@ class App2(customtkinter.CTk):
         super().__init__()
 
         self.title("CTkScrollableFrame example")
-        self.geometry("1200x450")
+        self.geometry("1200x750")
         customtkinter.set_appearance_mode("light")
         self.configure(fg_color='white')
 
@@ -110,6 +110,10 @@ class App2(customtkinter.CTk):
 
         self.db = database_connection()
 
+        self.main_frame= MainFrame(master=self, fg_color='white')
+        self.main_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
+
+
         self.server_frame = ServerFrame(master=self, fg_color='white')
 
 
@@ -122,8 +126,6 @@ class App2(customtkinter.CTk):
         self.stockable_product_frame = ProductFrame(master=self, fg_color='white')
 
 
-        self.main_frame= MainFrame(master=self, fg_color='white')
-        self.main_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
 
         
         # create scrollable label and button frame

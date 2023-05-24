@@ -144,4 +144,4 @@ class StockLocationFrame(customtkinter.CTkFrame):
 
 
     def refresh_location_stock(self):
-        self.stock_location_list.stock_location_initialize()
+        self.stock_location_list.refresh_stock_location()
