@@ -3,7 +3,7 @@ import sys
 # setting path
 sys.path.append('../weighing')
 
-from api.odoo_api import OdooStockapi 
+from api.odoo_api import *
 
 url = 'http://192.168.1.98:8069'
 db = 'bilbao_test_2'
@@ -36,14 +36,16 @@ def get_stockable_product(fileds = [] ):
     return product_list
 
 
+
 connection = api_connection()
 product_dict = {}
-
+print(connection.get_stockable_products_ids(query = [['detailed_type','=','product'] , ['barcode','!=' , False]]))
 stock_location= get_stock_location()
 # print(connection.get_internal_locations_records( ['id','display_name','name']))
 
 
-print(get_stock_location())
+
+# print(get_stock_location())
 # print(stock_location[0][0])
 
 #print(f'\nFirst Two stock locations:\n {internal_location_ids} \n\n')

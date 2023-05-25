@@ -3,7 +3,7 @@ import customtkinter
 from models.database_connection import database_connection
 from PIL import Image
 import os
-
+from models.bar_code import *
 class SideBarFrame(customtkinter.CTkFrame):
 
     def __init__(self, master,  **kwargs):
@@ -145,16 +145,16 @@ class ActionFrame(customtkinter.CTkFrame):
 
         self.grid_columnconfigure(0, weight=1)
 
-        self.product_image = customtkinter.CTkImage(Image.open(os.path.join('images', "test.jpg")), size=(150, 150))
+        self.product_image = customtkinter.CTkImage(Image.open(os.path.join('static/images', "test.jpg")), size=(150, 150))
         self.product_image_label = customtkinter.CTkLabel(self, text="", image=self.product_image)
         self.product_image_label.grid(row=0, column=1, columnspan=2, padx=15, pady=(10,10), sticky="nswe")
 
 
-        self.invoice_image = customtkinter.CTkImage(Image.open(os.path.join('images', "invoice.png")), size=(300, 450))
+        self.invoice_image = customtkinter.CTkImage(Image.open(os.path.join('static/images', "invoice.png")), size=(300, 450))
         self.invoice_image_label = customtkinter.CTkLabel(self, text="", image=self.invoice_image)
         self.invoice_image_label.grid(row=1, column=1, columnspan=2, padx=15, pady=(10, 10), sticky="nswe")
 
-        self.bar_code_image = customtkinter.CTkImage(Image.open(os.path.join('images', "bar_code.jpg")), size=(200, 150))
+        self.bar_code_image = customtkinter.CTkImage(Image.open(os.path.join('static/images', "bar_code.png")), size=(200, 150))
         self.bar_code_image_label = customtkinter.CTkLabel(self, text="", image=self.bar_code_image)
         
 
@@ -173,11 +173,18 @@ class ActionFrame(customtkinter.CTkFrame):
 
     def create_code_bar_button(self):
         print('i am now creating the code a bar image and i will show it now')
+        gen_bar_code('12345656666666')        
+
+        bar_code_img = Image.open(os.path.join('static/images', "invoice.png"))
+        print(bar_code_img)
+        self.bar_code_image.configure(image = bar_code_img)
+        self.bar_code_image.image = bar_code_img
+        
         self.invoice_image_label.grid_forget()
         self.bar_code_image_label.grid(row=1, column=1, columnspan=2, padx=15, pady=(10, 10), sticky="we")
         self.button_reset.grid_forget()
         self.button_print.grid(row=2, column=1, columnspan=2, padx=15, pady=(10,10), sticky="w")
-
+        
     
     def print_bar_code(self):
         print('i am now printing the bar code')
