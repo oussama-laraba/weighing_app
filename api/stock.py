@@ -16,7 +16,7 @@ def api_connection():
     return OdooStockapi(url, db, user, key)
     
 
-def get_stock_location(fields = [] ):
+def get_stock_location(fields = []):
     connection = api_connection()
     internal_location_ids = connection.get_stock_locations(fields)
     return internal_location_ids
@@ -34,3 +34,5 @@ def get_stockable_product(fileds = [] ):
 
 
     return product_list
+
+print(get_stock_location(["company_id"]))

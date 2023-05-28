@@ -24,8 +24,7 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.company_selection_frame.grid(row=0, column=0, padx=15, pady=(10,10))
         self.company_selection_frame.grid_columnconfigure(0, weight=1)
         
-        def company_callback(choice):
-            print("company dropdown clicked:", choice)
+
 
         self.comany_label = customtkinter.CTkLabel(self.company_selection_frame, text="Company")
 
@@ -33,7 +32,7 @@ class SideBarFrame(customtkinter.CTkFrame):
 
         self.company = customtkinter.CTkOptionMenu(self.company_selection_frame, values=["company 1", "company 2"],
                                                 width=350,
-                                                command=company_callback)
+                                                command=self.company_callback)
         self.company.grid(row=1, column=0, sticky="w")
 
 
@@ -47,7 +46,7 @@ class SideBarFrame(customtkinter.CTkFrame):
 
         self.location = customtkinter.CTkOptionMenu(self.location_selection_frame, values=["location 1", "location 2"],
                                                 width=350,
-                                                command=company_callback)
+                                                command=self.location_callback)
         self.location.grid(row=1, column=0, sticky="w")
 
 
@@ -62,7 +61,7 @@ class SideBarFrame(customtkinter.CTkFrame):
 
         self.product = customtkinter.CTkOptionMenu(self.product_selection_frame, values=["produit 1", "produit 2"],
                                                 width=350,
-                                                command=company_callback)
+                                                command=self.product_callback)
         self.product.grid(row=1, column=0, sticky="w")
 
 
@@ -87,9 +86,10 @@ class SideBarFrame(customtkinter.CTkFrame):
 
         self.confirm_product_quantity = customtkinter.CTkEntry(self.product_quantity_frame,
                                                 placeholder_text= 'Produit Quantité',
-                                                state='disabled',
                                                 width=350)
         self.confirm_product_quantity.grid(row=3, column=0, sticky="w")
+        self.confirm_product_quantity.insert(0,'text')
+        self.confirm_product_quantity.configure(state='disabled')
 
 
 
@@ -109,6 +109,19 @@ class SideBarFrame(customtkinter.CTkFrame):
                                                 width=350)
         self.button_reset.grid(row=5, column=0, sticky="w",  pady=(10,10))
         
+
+
+
+
+    def company_callback(self, company):
+        print("company dropdown clicked:", company)
+
+    def location_callback(self, location):
+        print("location dropdown clicked:", location)
+
+    def product_callback(self, product):
+        print("product dropdown clicked:", product)
+    
 
     def reset_button(self):
         print('button reset pressed')

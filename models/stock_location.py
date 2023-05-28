@@ -70,7 +70,7 @@ class StockLocationListFrame(customtkinter.CTkScrollableFrame):
 
             if not db_ids_dict.get(str(rec['id'])):
                 create_query = 'INSERT INTO STOCK_LOCATION (ODOO_ID, LOCATION)\
-                                VALUES ({},"{}")'.format(rec['id'], rec['name'])
+                                VALUES ({},"{}")'.format(rec['id'], rec['display_name'])
                 print(rec['id'])
                 cursor.execute(create_query)
             
