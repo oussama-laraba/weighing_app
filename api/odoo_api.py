@@ -97,9 +97,9 @@ class OdooConnection:
             
         if self.check_access_right(model):
             
-            if query != [] :
+            if query != [] and type(query[0])!= list:
                 query = [query]
-            
+
             search_result = self.call_method(model,'search', [query], {'offset': offset, 'limit': limit})
             return search_result
         else: 
@@ -180,17 +180,23 @@ class OdooConnection:
 
 class OdooStockapi(OdooConnection):
     
-    def get_stockable_products (self,fields = [] , offset = 0 , limit = 0):
-        
-        model = 'product.product'
-        query = ['detailed_type','=','product'] # only stockable products
-        recs = []
 
-        stockable_products_ids =  self.get_ids(model,query,offset,limit)
+
+    def get_stockable_products_ids(self ,query = ['detailed_type','=','product'] ):  
+            
+        model = 'product.product'
+        stockable_products_ids = self.get_ids(model,query)# only stockable products
+        return stockable_products_ids
+    
+    def get_stockable_products_records (self,fields = [] , offset = 0 , limit = 0):
+        model = ''
+        stockable_products = []
+        stockable_products_ids =  self.get_stockable_products_ids()
         
         if stockable_products_ids:
-            recs = self.get_records(model,stockable_products_ids ,fields )
-        return recs
+            model = 'product.product'
+            stockable_products = self.get_records(model,stockable_products_ids ,fields )
+        return stockable_products
 
     def get_stock_locations(self ,fields = ['id','location_id','product_id','quantity','product_uom_id'] , offset = 0, limit = 0):
         model = ''
