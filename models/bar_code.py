@@ -20,7 +20,6 @@ def gen_bar_code(   sequence , path_to_wkhtmltopdf = r'/usr/bin/wkhtmltopdf' ,
 
 def print_bar_code(sequence ,path_to_file = 'static/images/barcode.pdf'):
     gen_bar_code(sequence)
+    
     os.system(f"lpr -P canonG3010Series {path_to_file}")
 
-print('....In process')
-gen_bar_code(sequence = '2`1`')

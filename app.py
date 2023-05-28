@@ -15,7 +15,7 @@ class App2(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("CTkScrollableFrame example")
+        self.title("Menu")
         self.geometry("1200x750")
         customtkinter.set_appearance_mode("light")
         self.configure(fg_color='white')

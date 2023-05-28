@@ -173,12 +173,13 @@ class ActionFrame(customtkinter.CTkFrame):
 
     def create_code_bar_button(self):
         print('i am now creating the code a bar image and i will show it now')
-        gen_bar_code('12345656666666')        
+        
+        gen_bar_code(sequence = '12345678910111')      
 
-        bar_code_img = Image.open(os.path.join('static/images', "invoice.png"))
-        print(bar_code_img)
-        self.bar_code_image.configure(image = bar_code_img)
-        self.bar_code_image.image = bar_code_img
+        bar_code_img = customtkinter.CTkImage(Image.open(os.path.join('static/images', "bar_code.png")), size=(200, 150))
+
+        self.bar_code_image_label.configure( image = bar_code_img)
+        self.bar_code_image_label.image = bar_code_img
         
         self.invoice_image_label.grid_forget()
         self.bar_code_image_label.grid(row=1, column=1, columnspan=2, padx=15, pady=(10, 10), sticky="we")
