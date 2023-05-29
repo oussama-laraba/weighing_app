@@ -39,13 +39,17 @@ def get_stockable_product(fileds = [] ):
 
 connection = api_connection()
 product_dict = {}
-print(connection.get_stockable_products_ids(query = [['detailed_type','=','product'] , ['barcode','!=' , False]]))
-stock_location= get_stock_location()
+# print(connection.get_stockable_products_ids(query = [['detailed_type','=','product'] , ['barcode','!=' , False]]))
+# stock_location= get_stock_location()
 # print(connection.get_internal_locations_records( ['id','display_name','name']))
+stockable_products = connection.get_stockable_products_records(['display_name'] )
+product_location = connection.get_stock_locations()
 
 
+# print(get_stock_location( )[0])
 
-# print(get_stock_location())
+print(stockable_products[0])
+print(product_location[0])
 # print(stock_location[0][0])
 
 #print(f'\nFirst Two stock locations:\n {internal_location_ids} \n\n')
