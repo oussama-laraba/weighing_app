@@ -145,26 +145,30 @@ class ProductFrame(customtkinter.CTkFrame):
         # add widgets onto the frame, for example:
         self.grid_rowconfigure(1, weight=1)  # configure grid system
         self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
+        self.grid_columnconfigure(3, weight=1)
         self.db= database_connection()
 
         self.product_title = customtkinter.CTkLabel(master=self, text="Liste des Produits stockable", fg_color="white")
         self.product_title.grid(row=0, column=0,  padx=15, pady=5, sticky="w")
 
         self.location_values_id = {}
+        self.location_label = customtkinter.CTkLabel(master=self, text="Emplacements:", fg_color="white")
+        self.location_label.grid(row=0, column=1,  padx=(0,5), pady=5, sticky="e")
+
         self.location = customtkinter.CTkOptionMenu(self, values=[],
                                                 width=250,
                                                 command=self.location_callback)
-        self.location.grid(row=0, column=1, padx=15, pady=5, sticky="nsew")
+        self.location.grid(row=0, column=2, padx=15, pady=5, sticky="nsew")
         self.load_location()
 
 
         self.button = customtkinter.CTkButton(master=self, text="Refresh", command=self.refresh_product)
-        self.button.grid(row=0, column=2, padx=15, pady=5, sticky="e")
+        self.button.grid(row=0, column=3, padx=15, pady=5, sticky="e")
 
         self.product_list = ProductListFrame(master=self, corner_radius=0, fg_color='#ededed')
-        self.product_list.grid(row=1, column=0, columnspan=3,  padx=15, sticky="nsew")
+        self.product_list.grid(row=1, column=0, columnspan=4,  padx=15, sticky="nsew")
         
         self.product_list.product_initialize(self.location_values_id[self.location.get()])
 
