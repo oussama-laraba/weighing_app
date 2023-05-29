@@ -306,6 +306,7 @@ class ActionFrame(customtkinter.CTkFrame):
         self.side_bar.load_locations()
         self.side_bar.load_products()
 
+        self.side_bar.product_entry.delete(0,tk.END)
         self.side_bar.product_quantity.configure(state='normal')
         self.side_bar.product_quantity.delete(0,tk.END)
         self.side_bar.product_quantity.configure(state='disabled')

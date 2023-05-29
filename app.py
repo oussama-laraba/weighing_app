@@ -49,12 +49,12 @@ class App2(customtkinter.CTk):
             background='white'
         )
 
+
         self.config_menu.add_command(
             label='Settings',
             command= lambda: self.select_config_frame_by_name('serverframe'),
             background='white'
         )
-
 
 
         self.stock_menu.add_command(
