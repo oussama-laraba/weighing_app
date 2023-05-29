@@ -188,7 +188,7 @@ class OdooStockapi(OdooConnection):
         stockable_products_ids = self.get_ids(model,query)# only stockable products
         return stockable_products_ids
     
-    def get_stockable_products_records (self,fields = [] , offset = 0 , limit = 0):
+    def get_stockable_products_records(self,fields = [] , offset = 0 , limit = 0):
         model = ''
         stockable_products = []
         stockable_products_ids =  self.get_stockable_products_ids()
@@ -198,7 +198,8 @@ class OdooStockapi(OdooConnection):
             stockable_products = self.get_records(model,stockable_products_ids ,fields )
         return stockable_products
 
-    def get_stock_locations(self ,fields = ['id','location_id','product_id','quantity','product_uom_id'] , offset = 0, limit = 0):
+    def get_stock_locations(self ,fields = ['id','location_id','product_id','quantity','product_uom_id','company_id'] , offset = 0, limit = 0):
+        fields = fields
         model = ''
         internal_location_ids = self.get_internal_locations_ids()
         internal_stock_ids = []
@@ -209,12 +210,16 @@ class OdooStockapi(OdooConnection):
             stock_location = self.get_records(model,internal_stock_ids ,fields )
         return stock_location 
     
+
+    
+
+
     def get_internal_locations_ids(self ):
         model = 'stock.location'
         internal_location_ids = self.get_ids(model,['usage','=','internal'])
         return internal_location_ids
 
-    def get_internal_locations_records(self , fields = ['id','display_name'] ):
+    def get_internal_locations_records(self , fields = ['id','display_name', 'company_id'] ):
         model = 'stock.location'
         internal_location_recs = []
         internal_location_ids = self.get_internal_locations_ids()

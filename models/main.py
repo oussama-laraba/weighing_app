@@ -2,8 +2,11 @@ import tkinter as tk
 import customtkinter
 from models.database_connection import database_connection
 from PIL import Image
+from ttkwidgets.autocomplete import AutocompleteCombobox
+from api.stock import main_product_stock
 import os
 from models.bar_code import *
+
 class SideBarFrame(customtkinter.CTkFrame):
 
     def __init__(self, master,  **kwargs):
@@ -24,14 +27,11 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.company_selection_frame.grid(row=0, column=0, padx=15, pady=(10,10))
         self.company_selection_frame.grid_columnconfigure(0, weight=1)
         
-
-
+        self.company_values = []
         self.comany_label = customtkinter.CTkLabel(self.company_selection_frame, text="Company")
-
         self.comany_label.grid(row=0, column=0, sticky="w")
-
-        self.company = customtkinter.CTkOptionMenu(self.company_selection_frame, values=["company 1", "company 2"],
-                                                width=350,
+        self.company = customtkinter.CTkOptionMenu(self.company_selection_frame, values=[],
+                                                width=450,
                                                 command=self.company_callback)
         self.company.grid(row=1, column=0, sticky="w")
 
@@ -41,53 +41,68 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.location_selection_frame.grid(row=1, column=0, padx=15, pady=(10,10))
         self.location_selection_frame.grid_columnconfigure(0, weight=1)
         
+        self.location_values_id = {}
         self.location_label = customtkinter.CTkLabel(self.location_selection_frame, text="Location")
         self.location_label.grid(row=0, column=0, sticky="w")
-
         self.location = customtkinter.CTkOptionMenu(self.location_selection_frame, values=["location 1", "location 2"],
-                                                width=350,
+                                                width=450,
                                                 command=self.location_callback)
         self.location.grid(row=1, column=0, sticky="w")
+        
 
 
 
-
-        self.product_selection_frame = customtkinter.CTkFrame(master=self, height=60, fg_color='grey')
+        
+        self.product_selection_frame = customtkinter.CTkFrame(master=self, height=60, width=550, fg_color='grey')
         self.product_selection_frame.grid(row=2, column=0, padx=15, pady=(10,10))
         self.product_selection_frame.grid_columnconfigure(0, weight=1)
+        self.product_selection_frame.grid_columnconfigure(1, weight=0)
 
+        self.product_id_values_quantity = []
         self.product_label = customtkinter.CTkLabel(self.product_selection_frame, text="Produit")
         self.product_label.grid(row=0, column=0, sticky="w")
-
+        self.product_var = customtkinter.StringVar(value="option 2")
         self.product = customtkinter.CTkOptionMenu(self.product_selection_frame, values=["produit 1", "produit 2"],
-                                                width=350,
-                                                command=self.product_callback)
+                                                width=300,
+                                                command=self.product_callback,
+                                                variable=self.product_var)
         self.product.grid(row=1, column=0, sticky="w")
 
+
+        self.product_entry_label = customtkinter.CTkLabel(self.product_selection_frame, text="Chercher Produit")
+        self.product_entry_label.grid(row=0, column=1, padx=(15,0), sticky="w")
+        self.product_entry = customtkinter.CTkEntry(
+                                        self.product_selection_frame, 
+                                        )
+        self.product_entry.grid(row=1, column=1, padx=(15,0), sticky="w")
+        self.product_entry.bind('<KeyRelease>', self.product_check_input)
 
 
         self.product_quantity_frame = customtkinter.CTkFrame(master=self,  fg_color='grey')
         self.product_quantity_frame.grid(row=3, column=0, padx=15, pady=(10,10))
         self.product_quantity_frame.grid_columnconfigure(0, weight=1)
 
+        self.product_disponible_quantity_label = customtkinter.CTkLabel(self.product_quantity_frame, text="", font=('', 14))
+        self.product_disponible_quantity_label.grid(row=0, column=0, sticky="w")
+
         self.product_quantity_label = customtkinter.CTkLabel(self.product_quantity_frame, text="Quantite")
-        self.product_quantity_label.grid(row=0, column=0, sticky="w")
+        self.product_quantity_label.grid(row=1, column=0, sticky="w")
 
         self.product_quantity = customtkinter.CTkEntry(self.product_quantity_frame,
                                                 placeholder_text= 'Produit Quantité',
-                                                width=350)
-        self.product_quantity.grid(row=1, column=0, sticky="w",  pady=(0,10))
+                                                width=450)
+        self.product_quantity.grid(row=2, column=0, sticky="w",  pady=(0,10))
         self.product_quantity.insert(0,'text')
         self.product_quantity.configure(state='disabled')
 
 
         self.confirm_product_quantity_label = customtkinter.CTkLabel(self.product_quantity_frame, text="Confirme quantite")
-        self.confirm_product_quantity_label.grid(row=2, column=0, sticky="w")
+        self.confirm_product_quantity_label.grid(row=3, column=0, sticky="w")
 
         self.confirm_product_quantity = customtkinter.CTkEntry(self.product_quantity_frame,
                                                 placeholder_text= 'Produit Quantité',
-                                                width=350)
-        self.confirm_product_quantity.grid(row=3, column=0, sticky="w")
+                                                width=450)
+        self.confirm_product_quantity.grid(row=4, column=0, sticky="w")
         self.confirm_product_quantity.insert(0,'text')
         self.confirm_product_quantity.configure(state='disabled')
 
@@ -101,33 +116,117 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.extra_info_label.grid(row=0, column=0, sticky="w")
 
         self.extra_info = customtkinter.CTkTextbox(self.extra_info_frame,
-                                                width=350, height=200)
+                                                width=450, height=200)
         self.extra_info.grid(row=1, column=0, sticky="w",  pady=(0,10))
 
         self.button_reset = customtkinter.CTkButton(self.extra_info_frame, text="Reset",
                                                 command=self.reset_button,
-                                                width=350)
+                                                width=450)
         self.button_reset.grid(row=5, column=0, sticky="w",  pady=(10,10))
+
+        self.load_companies()
+        self.load_locations()
+        self.load_products()
+
+
+
+    def load_companies(self):
+        cursor = self.db.cursor()
+        companies = cursor.execute('SELECT DISTINCT COMPANY_ID FROM STOCK_LOCATION;').fetchall()
+        self.company_values = [company[0] for company in companies]
+        self.company.configure(values=self.company_values)
+        self.company.set(companies[0][0])
+        cursor.close()
+
+
+    def load_locations(self):
+        cursor = self.db.cursor()
+        id_location = cursor.execute('SELECT ODOO_ID, LOCATION FROM STOCK_LOCATION WHERE COMPANY_ID = "{}";'.format(self.company.get())).fetchall()
+
+        self.location_values_id = { location[1]:location[0] for location in id_location }
+        locations = list(self.location_values_id.keys())
+        self.location.configure(values=locations)
+        self.location.set(locations[0])
+        cursor.close()
+
+
+    def load_products(self):
+
+        # cursor = self.db.cursor()
+        # products = cursor.execute('SELECT * FROM PRODUCT AS P\
+        #                             INNER JOIN PRODUCT_LOCATION AS PL ON P.ID = PL.PRODUCT_ID\
+        #                             INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID\
+        #                             AND  SL.LOCATION = "{}";'.format(self.location.get())).fetchall()
+
+        products = main_product_stock(self.location_values_id[self.location.get()])
+        self.product_id_values_quantity = [[ product['product_id'][0], product['product_id'][1],\
+                                            product['quantity'] ] for product in products]
+        if products:
+            product_values = [product[1] for product in self.product_id_values_quantity]
+            self.product.configure(values=product_values)
+            self.product.set(self.product_id_values_quantity[0][1])
+            color = 'green' if self.product_id_values_quantity[0][2] > 0 else 'red'
+            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : '+str(self.product_id_values_quantity[0][2]), text_color=color)
+        else:
+            self.product.configure(values=['NO PRODUCT'])
+            self.product.set('NO PRODUCT')
+
+        print(self.product_var.get())
         
 
 
 
+    def product_check_input(self, event):
+        search = self.product_entry.get()
+        values_quantity = [[product[1], product[2]]  for product in self.product_id_values_quantity]
+        copied_values_quantity = list(values_quantity)
+        for value in copied_values_quantity:
+            if search.lower() not in value[0].lower():
+                values_quantity.remove(value)
+        
+        if values_quantity:
+            self.product.configure(values = [ value[0] for value in values_quantity])
+            if len(values_quantity[0][0])> 30:
+                self.product.set(values_quantity[0][0][:30]+' ...')
+            else: self.product.set(values_quantity[0][0])
+
+            color = 'green' if values_quantity[0][1] > 0 else 'red'
+            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : '+str(values_quantity[0][1]), text_color=color)
+
+        else:
+            self.product.configure(values = ['NO PRODUCT'])
+            self.product.set('NO PRODUCT')
+        pass
+
 
     def company_callback(self, company):
         print("company dropdown clicked:", company)
+        self.load_locations()
+        self.load_products()
 
     def location_callback(self, location):
         print("location dropdown clicked:", location)
+    
+        self.load_products()
 
-    def product_callback(self, product):
-        print("product dropdown clicked:", product)
+    def product_callback(self, product_name):
+        print("product dropdown clicked:", product_name)
+        if len(product_name)> 30:
+            self.product.set(product_name[:30]+' ...')
+
+        for product in self.product_id_values_quantity:
+            if product[1] == product_name:
+                color = 'green' if product[2] > 0 else 'red'
+                self.product_disponible_quantity_label.configure(text = 'Quantite disponible : '+str(product[2]), text_color=color)
+
+
     
 
     def reset_button(self):
         print('button reset pressed')
-        self.company.set("company 1")
-        self.location.set("location 1")
-        self.product.set("produit 1")
+        self.company.set(self.company.cget("values")[0])
+        self.load_locations()
+        self.load_products()
 
         self.product_quantity.configure(state='normal')
         self.product_quantity.delete(0,tk.END)
@@ -174,13 +273,13 @@ class ActionFrame(customtkinter.CTkFrame):
 
         self.button_reset = customtkinter.CTkButton(self, text="Confirm and create code à bar",
                                                 command=self.create_code_bar_button,
-                                                width=350)
+                                                width=450)
         self.button_reset.grid(row=2, column=1, columnspan=2, padx=15, pady=(10,10), sticky="w")
 
 
         self.button_print = customtkinter.CTkButton(self, text="Print code à bar",
                                                 command=self.print_bar_code,
-                                                width=350)
+                                                width=450)
         
 
 

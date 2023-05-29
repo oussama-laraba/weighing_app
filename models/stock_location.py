@@ -1,7 +1,7 @@
 import tkinter as tk
 import customtkinter
 from models.database_connection import database_connection
-from api.stock import get_stock_location
+from api.stock import get_locations
 
 
 
@@ -13,7 +13,7 @@ class StockLocationListFrame(customtkinter.CTkScrollableFrame):
 
         self.db = database_connection()
         id_odoo = customtkinter.CTkLabel(self, text="id_odoo",  padx=5, width=200, anchor="w")
-        location = customtkinter.CTkLabel(self, text='Emplacement', padx=5, width=300,  anchor="w", justify="center")
+        location = customtkinter.CTkLabel(self, text='Emplacement', padx=5, width=400,  anchor="w", justify="center")
 
         
         id_odoo.grid(row=0, column=0, pady=(0, 10), sticky="w")
@@ -48,9 +48,9 @@ class StockLocationListFrame(customtkinter.CTkScrollableFrame):
 
     def refresh_stock_location(self):
         cursor = self.db.cursor()
-
+        records = cursor.execute('DELETE FROM STOCK_LOCATION;')
         # get stock location from odoo api
-        stock_location = get_stock_location(['id','location_id' , 'company_id', 'display_name'])
+        stock_location = get_locations(['id','location_id' , 'company_id', 'display_name'])
         print(stock_location)
         # get all stock location ids from sqlite database
         select_locations= 'SELECT ODOO_ID FROM STOCK_LOCATION;'
@@ -69,9 +69,8 @@ class StockLocationListFrame(customtkinter.CTkScrollableFrame):
             stock_location_ids += str(rec['id'])+','
 
             if not db_ids_dict.get(str(rec['id'])):
-                create_query = 'INSERT INTO STOCK_LOCATION (ODOO_ID, LOCATION)\
-                                VALUES ({},"{}")'.format(rec['id'], rec['display_name'])
-                print(rec['id'])
+                create_query = 'INSERT INTO STOCK_LOCATION (ODOO_ID, LOCATION, COMPANY_ID)\
+                                VALUES ({},"{}","{}")'.format(rec['id'], rec['display_name'], rec['company_id'][1])
                 cursor.execute(create_query)
             
 
@@ -104,7 +103,7 @@ class StockLocation(customtkinter.CTkFrame):
 
         self.id= instance[0]
         self.id_odoo = customtkinter.CTkLabel(self, text=instance[1], compound="left", padx=5, width=200, anchor="w", text_color=color)
-        self.location = customtkinter.CTkLabel(self, text=instance[2], compound="left", padx=5, width=300, anchor="w", text_color=color)
+        self.location = customtkinter.CTkLabel(self, text=instance[2], compound="left", padx=5, width=400, anchor="w", text_color=color)
         
         self.id_odoo.grid(row=0, column=0, pady=(5, 5), sticky="w")
         self.location.grid(row=0, column=1, pady=(5, 5), sticky="w")

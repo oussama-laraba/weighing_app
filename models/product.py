@@ -53,6 +53,11 @@ class ProductListFrame(customtkinter.CTkScrollableFrame):
         products = get_stockable_product()
 
         # get all stock location ids from sqlite database
+        delete_products= 'DELETE FROM PRODUCT;'
+
+        cursor.execute(delete_products)
+
+        # get all stock location ids from sqlite database
         select_products= 'SELECT ODOO_ID FROM PRODUCT;'
 
         cursor.execute(select_products)
@@ -65,6 +70,12 @@ class ProductListFrame(customtkinter.CTkScrollableFrame):
         
         # string have all
         product_ids = ''
+
+
+        delete_products= 'DELETE FROM PRODUCT_LOCATION;'
+
+        cursor.execute(delete_products)
+
         for rec in products:
             product_ids += str(rec['id'])+','
 
@@ -72,9 +83,14 @@ class ProductListFrame(customtkinter.CTkScrollableFrame):
                 create_query = 'INSERT INTO PRODUCT (ODOO_ID, NAME)\
                                 VALUES ({},"{}")'.format(rec['id'], rec['name'])
                 
-                print(rec['id'])
-                cursor.execute(create_query)
-            
+                product_id = cursor.execute(create_query).lastrowid
+                if rec.get('location_id'):
+                    for location in rec.get('location_id'):
+                        location_id = cursor.execute('SELECT ID FROM STOCK_LOCATION WHERE ODOO_ID = {}'.format(location)).fetchone()[0]
+                        create_product_location_query = 'INSERT INTO PRODUCT_LOCATION (STOCK_LOCATION_ID, PRODUCT_ID)\
+                                                        VALUES ({},{})'.format(location_id, product_id)
+                        cursor.execute(create_product_location_query)
+
 
 
         product_ids = product_ids[:-1]
