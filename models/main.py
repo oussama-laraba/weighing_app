@@ -27,7 +27,7 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.db = database_connection()
 
 
-        self.company_selection_frame = customtkinter.CTkFrame(master=self, fg_color='grey')
+        self.company_selection_frame = customtkinter.CTkFrame(master=self, fg_color='#D2D7D3')
         self.company_selection_frame.grid(row=0, column=0, padx=15, pady=(10,10))
         self.company_selection_frame.grid_columnconfigure(0, weight=1)
         
@@ -41,7 +41,7 @@ class SideBarFrame(customtkinter.CTkFrame):
 
 
 
-        self.location_selection_frame = customtkinter.CTkFrame(master=self, height=60,fg_color='grey')
+        self.location_selection_frame = customtkinter.CTkFrame(master=self, height=60,fg_color='#D2D7D3')
         self.location_selection_frame.grid(row=1, column=0, padx=15, pady=(10,10))
         self.location_selection_frame.grid_columnconfigure(0, weight=1)
         
@@ -57,7 +57,7 @@ class SideBarFrame(customtkinter.CTkFrame):
 
 
         
-        self.product_selection_frame = customtkinter.CTkFrame(master=self, height=60, width=550, fg_color='grey')
+        self.product_selection_frame = customtkinter.CTkFrame(master=self, height=60, width=550, fg_color='#D2D7D3')
         self.product_selection_frame.grid(row=2, column=0, padx=15, pady=(10,10))
         self.product_selection_frame.grid_columnconfigure(0, weight=1)
         self.product_selection_frame.grid_columnconfigure(1, weight=0)
@@ -82,7 +82,7 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.product_entry.bind('<KeyRelease>', self.product_check_input)
 
 
-        self.product_quantity_frame = customtkinter.CTkFrame(master=self,  fg_color='grey')
+        self.product_quantity_frame = customtkinter.CTkFrame(master=self,  fg_color='#D2D7D3')
         self.product_quantity_frame.grid(row=3, column=0, padx=15, pady=(10,10))
         self.product_quantity_frame.grid_columnconfigure(0, weight=1)
 
@@ -112,7 +112,7 @@ class SideBarFrame(customtkinter.CTkFrame):
 
 
 
-        self.extra_info_frame = customtkinter.CTkFrame(master=self,  fg_color='grey')
+        self.extra_info_frame = customtkinter.CTkFrame(master=self,  fg_color='#D2D7D3')
         self.extra_info_frame.grid(row=4, column=0, padx=15, pady=(10,10))
         self.extra_info_frame.grid_columnconfigure(0, weight=1)
 
@@ -123,10 +123,10 @@ class SideBarFrame(customtkinter.CTkFrame):
                                                 width=450, height=200)
         self.extra_info.grid(row=1, column=0, sticky="w",  pady=(0,10))
 
-        self.button_reset = customtkinter.CTkButton(self.extra_info_frame, text="Reset",
-                                                command=self.reset_button,
+        self.button_create_bar_code= customtkinter.CTkButton(self.extra_info_frame, text="Confirm and create code à bar",
+                                                command=self.create_code_bar_button,
                                                 width=450)
-        self.button_reset.grid(row=5, column=0, sticky="w",  pady=(10,10))
+        self.button_create_bar_code.grid(row=5, column=0, sticky="w",  pady=(10,10))
 
         self.load_companies()
         self.load_locations()
@@ -170,10 +170,12 @@ class SideBarFrame(customtkinter.CTkFrame):
             self.product.configure(values=product_values)
             self.product.set(self.product_id_values_quantity[0][1])
             color = 'green' if self.product_id_values_quantity[0][2] > 0 else 'red'
-            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : '+str(self.product_id_values_quantity[0][2]), text_color=color)
+            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,}'\
+                            .format(round(self.product_id_values_quantity[0][2], 2)).replace(',', ' '), text_color=color)
         else:
             self.product.configure(values=['NO PRODUCT'])
             self.product.set('NO PRODUCT')
+            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : 0', text_color='black')
 
         print(self.product_var.get())
         
@@ -195,11 +197,13 @@ class SideBarFrame(customtkinter.CTkFrame):
             else: self.product.set(values_quantity[0][0])
 
             color = 'green' if values_quantity[0][1] > 0 else 'red'
-            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : '+str(values_quantity[0][1]), text_color=color)
+            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,}'\
+                .format(round(values_quantity[0][1], 2)).replace(',', ' '), text_color=color)
 
         else:
             self.product.configure(values = ['NO PRODUCT'])
             self.product.set('NO PRODUCT')
+            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : 0', text_color='black')
         pass
 
 
@@ -221,27 +225,25 @@ class SideBarFrame(customtkinter.CTkFrame):
         for product in self.product_id_values_quantity:
             if product[1] == product_name:
                 color = 'green' if product[2] > 0 else 'red'
-                self.product_disponible_quantity_label.configure(text = 'Quantite disponible : '+str(product[2]), text_color=color)
+                self.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,}'\
+                        .format(round(product[2],2)).replace(',', ' '), text_color=color)
 
 
-    
+    def create_code_bar_button(self):
+        print('i am now creating the code a bar image and i will show it now')
+        
+        gen_bar_code(sequence = '12345678910111')      
 
-    def reset_button(self):
-        print('button reset pressed')
-        self.company.set(self.company.cget("values")[0])
-        self.load_locations()
-        self.load_products()
+        bar_code_img = customtkinter.CTkImage(Image.open(os.path.join('static/images', "bar_code.png")), size=(200, 150))
 
-        self.product_quantity.configure(state='normal')
-        self.product_quantity.delete(0,tk.END)
-        self.product_quantity.configure(state='disabled')
+        self.bar_code_image_label.configure( image = bar_code_img)
+        self.bar_code_image_label.image = bar_code_img
+        
+        self.invoice_image_label.grid_forget()
+        self.bar_code_image_label.grid(row=1, column=1, columnspan=2, padx=15, pady=(10, 10), sticky="we")
+        self.button_create_bar_code.grid_forget()
+        self.button_print.grid(row=2, column=1, columnspan=2, padx=15, pady=(10,10), sticky="w")
 
-        self.confirm_product_quantity.configure(state='normal')
-        self.confirm_product_quantity.delete(0,tk.END)
-        self.confirm_product_quantity.configure(state='disabled')
-        # self.confirm_product_quantity.configure(text='sfgsfg')
-
-        self.extra_info.delete('1.0',tk.END)
 
 
 
@@ -250,7 +252,7 @@ class SideBarFrame(customtkinter.CTkFrame):
 
 class ActionFrame(customtkinter.CTkFrame):
 
-    def __init__(self, master,  **kwargs):
+    def __init__(self, master, side_bar = None,  **kwargs):
         super().__init__(master, **kwargs)
         
         self.grid_rowconfigure(0, weight=0)
@@ -260,7 +262,7 @@ class ActionFrame(customtkinter.CTkFrame):
 
 
         self.grid_columnconfigure(0, weight=1)
-
+        self.side_bar = side_bar
         self.product_image = customtkinter.CTkImage(Image.open(os.path.join('static/images', "prod.png")), size=(150, 150))
         self.product_image_label = customtkinter.CTkLabel(self, text="", image=self.product_image)
         self.product_image_label.grid(row=0, column=1, columnspan=2, padx=15, pady=(10,10), sticky="nswe")
@@ -277,37 +279,43 @@ class ActionFrame(customtkinter.CTkFrame):
         
 
 
-        self.button_reset = customtkinter.CTkButton(self, text="Confirm and create code à bar",
-                                                command=self.create_code_bar_button,
-                                                width=450)
-        self.button_reset.grid(row=2, column=1, columnspan=2, padx=15, pady=(10,10), sticky="w")
+        self.button_reset = customtkinter.CTkButton(self, text="Reset",
+                                                command=self.reset_button,
+                                                fg_color= "white",
+                                                border_color="black",
+                                                hover_color= '#D2D7D3',
+                                                text_color="black",
+                                                border_width=1,
+                                                width=100)
+        self.button_reset.grid(row=2, column=1, columnspan=2, padx=15, pady=(10,10), sticky="we")
 
 
         self.button_print = customtkinter.CTkButton(self, text="Print code à bar",
                                                 command=self.print_bar_code,
                                                 width=450)
         
-
-
-    def create_code_bar_button(self):
-        print('i am now creating the code a bar image and i will show it now')
-        
-        gen_bar_code(sequence = '12345678910111')      
-
-        bar_code_img = customtkinter.CTkImage(Image.open(os.path.join('static/images', "bar_code.png")), size=(200, 150))
-
-        self.bar_code_image_label.configure( image = bar_code_img)
-        self.bar_code_image_label.image = bar_code_img
-        
-        self.invoice_image_label.grid_forget()
-        self.bar_code_image_label.grid(row=1, column=1, columnspan=2, padx=15, pady=(10, 10), sticky="we")
-        self.button_reset.grid_forget()
-        self.button_print.grid(row=2, column=1, columnspan=2, padx=15, pady=(10,10), sticky="w")
         
     
     def print_bar_code(self):
         print('i am now printing the bar code')
 
+
+    def reset_button(self):
+        print('button reset pressed')
+        self.side_bar.company.set(self.side_bar.company.cget("values")[0])
+        self.side_bar.load_locations()
+        self.side_bar.load_products()
+
+        self.side_bar.product_quantity.configure(state='normal')
+        self.side_bar.product_quantity.delete(0,tk.END)
+        self.side_bar.product_quantity.configure(state='disabled')
+
+        self.side_bar.confirm_product_quantity.configure(state='normal')
+        self.side_bar.confirm_product_quantity.delete(0,tk.END)
+        self.side_bar.confirm_product_quantity.configure(state='disabled')
+        # self.confirm_product_quantity.configure(text='sfgsfg')
+
+        self.side_bar.extra_info.delete('1.0',tk.END)
 
 
 
@@ -326,7 +334,7 @@ class MainFrame(customtkinter.CTkFrame):
         self.db = database_connection()
 
 
-        self.side_bar = SideBarFrame(master=self, fg_color='grey', width=700)
+        self.side_bar = SideBarFrame(master=self, fg_color='#D2D7D3', width=700)
         self.side_bar.grid(row=0, column=0, padx=100)
 
 
@@ -334,8 +342,8 @@ class MainFrame(customtkinter.CTkFrame):
         #                                         command=company_callback)
         # produit.grid(row=2, column=0, pady=(10, 10), sticky="we")
 
-
-        self.action_frame = ActionFrame(master=self, fg_color='grey')
+        
+        self.action_frame = ActionFrame(master=self,side_bar= self.side_bar, fg_color='#D2D7D3')
         self.action_frame.grid(row=0,column=1, columnspan=2)
 
 

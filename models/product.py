@@ -30,15 +30,23 @@ class ProductListFrame(customtkinter.CTkScrollableFrame):
         self.product_list.append(product)
 
     
-    def product_initialize(self):
+    def product_initialize(self, location_id):
         cursor = self.db.cursor()
 
         for rec in self.product_list:
             rec.destroy()
 
-        cursor.execute('SELECT * FROM PRODUCT;')
+        cursor.execute('SELECT * FROM PRODUCT AS P\
+                        INNER JOIN PRODUCT_LOCATION AS PL ON P.ID = PL.PRODUCT_ID\
+                        INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID AND\
+                        SL.ODOO_ID = {};'.format(location_id))
+        
+        # products = cursor.execute('SELECT * FROM PRODUCT AS P\
+        #                             INNER JOIN PRODUCT_LOCATION AS PL ON P.ID = PL.PRODUCT_ID\
+        #                             INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID\
+        #                             AND  SL.LOCATION = "{}";'.format(self.location.get())).fetchall()
         for idx,instance in enumerate(cursor.fetchall()):
-
+            print(instance)
             color, bg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
             self.add_item(instance, color, bg_color)
 
@@ -46,7 +54,7 @@ class ProductListFrame(customtkinter.CTkScrollableFrame):
         return None
     
 
-    def refresh_product(self):
+    def refresh_product(self, init_location_id):
         cursor = self.db.cursor()
 
         # get stock location from odoo api
@@ -101,11 +109,9 @@ class ProductListFrame(customtkinter.CTkScrollableFrame):
 
         self.db.commit()
 
-        records = cursor.execute('SELECT * FROM PRODUCT;').fetchall()
-        cursor.close()
 
-        self.product_initialize()
-        return records
+        self.product_initialize(init_location_id)
+        return None
 
 
 
@@ -139,20 +145,49 @@ class ProductFrame(customtkinter.CTkFrame):
         # add widgets onto the frame, for example:
         self.grid_rowconfigure(1, weight=1)  # configure grid system
         self.grid_columnconfigure(0, weight=1)
-
-        self.db= database_connection
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
+        self.db= database_connection()
 
         self.product_title = customtkinter.CTkLabel(master=self, text="Liste des Produits stockable", fg_color="white")
         self.product_title.grid(row=0, column=0,  padx=15, pady=5, sticky="w")
 
+        self.location_values_id = {}
+        self.location = customtkinter.CTkOptionMenu(self, values=[],
+                                                width=250,
+                                                command=self.location_callback)
+        self.location.grid(row=0, column=1, padx=15, pady=5, sticky="nsew")
+        self.load_location()
+
+
         self.button = customtkinter.CTkButton(master=self, text="Refresh", command=self.refresh_product)
-        self.button.grid(row=0, column=1, padx=15, pady=5, sticky="ns")
+        self.button.grid(row=0, column=2, padx=15, pady=5, sticky="e")
 
         self.product_list = ProductListFrame(master=self, corner_radius=0, fg_color='#ededed')
-        self.product_list.grid(row=1, column=0, columnspan=2,  padx=15, sticky="nsew")
-        self.product_list.product_initialize()
+        self.product_list.grid(row=1, column=0, columnspan=3,  padx=15, sticky="nsew")
+        
+        self.product_list.product_initialize(self.location_values_id[self.location.get()])
 
+    def location_callback(self, name):
+        print(f'you have choose the location with the following {self.location_values_id[name]} id ')
+        self.product_list.product_initialize(self.location_values_id[name])
 
+    def load_location(self):
+        print('you are now loading the locations ')
+        cursor = self.db.cursor()
+        id_location = cursor.execute('SELECT ODOO_ID, LOCATION FROM STOCK_LOCATION;').fetchall()
+
+        self.location_values_id = { location[1]:location[0] for location in id_location }
+        locations = list(self.location_values_id.keys())
+        self.location.configure(values=locations)
+        self.location.set(locations[0])
+        cursor.close()
 
     def refresh_product(self):
-        self.product_list.refresh_product()
+        # products = cursor.execute('SELECT * FROM PRODUCT AS P\
+        #                             INNER JOIN PRODUCT_LOCATION AS PL ON P.ID = PL.PRODUCT_ID\
+        #                             INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID\
+        #                             AND  SL.LOCATION = "{}";'.format(self.location.get())).fetchall()
+    
+        self.location.set(self.location.cget('values')[0])
+        self.product_list.refresh_product(self.location_values_id[self.location.get()])

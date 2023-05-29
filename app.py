@@ -110,8 +110,8 @@ class App2(customtkinter.CTk):
 
         self.db = database_connection()
 
-        self.main_frame= MainFrame(master=self, fg_color='white')
-        self.main_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
+        self.main_frame= MainFrame(master=self, fg_color='#D2D7D3')
+        self.main_frame.grid(row=1, column=1, sticky="nsew")
 
 
         self.server_frame = ServerFrame(master=self, fg_color='white')

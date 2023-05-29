@@ -28,8 +28,6 @@ def get_stockable_product(fields = [] ):
     stockable_products = connection.get_stockable_products_records(fields=['id','name'])
     product_location = connection.get_stock_locations(fields = ['id','location_id','product_id','quantity','product_uom_id','company_id'])
 
-    print(product_location)
-
     product_loc = {}
     for loc in product_location:
 
@@ -56,11 +54,9 @@ def main_product_stock(location_id = None):
     filtered_products = list()
 
     for product in list(products):
-        print(product['location_id'])
         if product['location_id'][0] == location_id :
             del product['id']
             del product['location_id']
             filtered_products.append(product)
-    print(filtered_products)
     return filtered_products
 
