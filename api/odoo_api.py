@@ -206,7 +206,8 @@ class OdooStockapi(OdooConnection):
         if internal_location_ids:
             model = 'stock.quant'
             internal_stock_ids =  self.get_ids(model,['location_id','in',internal_location_ids],offset,limit)
-            stock_location = self.get_records(model,internal_stock_ids ,fields )
+            # print(fields)
+            stock_location = self.get_records(model,internal_stock_ids ,fields)
         return stock_location 
     
     def get_internal_locations_ids(self ):

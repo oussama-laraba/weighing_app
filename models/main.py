@@ -1,9 +1,14 @@
 import tkinter as tk
+from tkinterhtml import HtmlFrame
+from tkhtmlview  import HTMLLabel
+from tkPDFViewer import tkPDFViewer as pdf
 import customtkinter
 from models.database_connection import database_connection
 from PIL import Image
 import os
 from models.bar_code import *
+import models.bar_code
+
 class SideBarFrame(customtkinter.CTkFrame):
 
     def __init__(self, master,  **kwargs):
@@ -158,14 +163,16 @@ class ActionFrame(customtkinter.CTkFrame):
 
         self.grid_columnconfigure(0, weight=1)
 
-        self.product_image = customtkinter.CTkImage(Image.open(os.path.join('static/images', "test.jpg")), size=(150, 150))
+        self.product_image = customtkinter.CTkImage(Image.open(os.path.join('static/images', "prod.png")), size=(150, 150))
         self.product_image_label = customtkinter.CTkLabel(self, text="", image=self.product_image)
         self.product_image_label.grid(row=0, column=1, columnspan=2, padx=15, pady=(10,10), sticky="nswe")
 
-
-        self.invoice_image = customtkinter.CTkImage(Image.open(os.path.join('static/images', "invoice.png")), size=(300, 450))
+        self.invoice_image = customtkinter.CTkImage(Image.open(os.path.join('static/images', "filled_template.png")), size=(250, 500))
         self.invoice_image_label = customtkinter.CTkLabel(self, text="", image=self.invoice_image)
+        
         self.invoice_image_label.grid(row=1, column=1, columnspan=2, padx=15, pady=(10, 10), sticky="nswe")
+    
+
 
         self.bar_code_image = customtkinter.CTkImage(Image.open(os.path.join('static/images', "bar_code.png")), size=(200, 150))
         self.bar_code_image_label = customtkinter.CTkLabel(self, text="", image=self.bar_code_image)
