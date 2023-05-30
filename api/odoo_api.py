@@ -1,5 +1,5 @@
 import xmlrpc.client
-
+import re
 class OdooConnection:
     
     def __init__(self, url, db, user, key):
@@ -61,12 +61,16 @@ class OdooConnection:
             Depends on the method you calling
         
         """
+        try:
 
-        ret = self.models.execute_kw(self.db, self.uid, self.key, model, method ,args , kwargs)
-        if ret :
-            return ret 
-        else :
-            return False
+            ret = self.models.execute_kw(self.db, self.uid, self.key, model, method ,args , kwargs)
+            if ret :
+                return ret 
+            else :
+                return False
+        except xmlrpc.client.Fault as fault:
+            print(fault.faultString)
+            return None
 
     def check_access_right (self, model, access_right = 'read'):
         """_this method allow us to check the access right of a given user on a given model_

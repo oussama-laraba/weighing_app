@@ -137,7 +137,7 @@ class App2(customtkinter.CTk):
         self.close_product_frames()
         self.close_stock_frames()
         
-        self.main_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
+        self.main_frame.grid(row=1, column=1,sticky="nsew")
     
 
     def close_config_frames(self):

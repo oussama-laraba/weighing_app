@@ -46,7 +46,6 @@ class ProductListFrame(customtkinter.CTkScrollableFrame):
         #                             INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID\
         #                             AND  SL.LOCATION = "{}";'.format(self.location.get())).fetchall()
         for idx,instance in enumerate(cursor.fetchall()):
-            print(instance)
             color, bg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
             self.add_item(instance, color, bg_color)
 

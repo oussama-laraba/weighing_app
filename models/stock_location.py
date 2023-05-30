@@ -10,14 +10,17 @@ class StockLocationListFrame(customtkinter.CTkScrollableFrame):
         super().__init__(master, **kwargs)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
 
         self.db = database_connection()
         id_odoo = customtkinter.CTkLabel(self, text="id_odoo",  padx=5, width=200, anchor="w")
-        location = customtkinter.CTkLabel(self, text='Emplacement', padx=5, width=400,  anchor="w", justify="center")
+        location = customtkinter.CTkLabel(self, text='Emplacement', padx=5, width=400,  anchor="w")
+        company = customtkinter.CTkLabel(self, text='Entreprise', padx=5, width=200,  anchor="w")
 
         
         id_odoo.grid(row=0, column=0, pady=(0, 10), sticky="w")
         location.grid(row=0, column=1, pady=(0, 10), sticky="w")
+        company.grid(row=0, column=2, pady=(0, 10), sticky="w")
         
         self.command = command
 
@@ -26,7 +29,7 @@ class StockLocationListFrame(customtkinter.CTkScrollableFrame):
     def add_item(self, instance, color, bg_color):
 
         stock_location = StockLocation(master=self, instance=instance, color=color, fg_color= bg_color)
-        stock_location.grid(row=len(self.stock_location_list)+1, column=0, columnspan=6, pady=(0, 10), sticky="nesw")
+        stock_location.grid(row=len(self.stock_location_list)+1, column=0, columnspan=6, pady=(0, 10), sticky="nswe")
         self.stock_location_list.append(stock_location)
 
     
@@ -83,10 +86,8 @@ class StockLocationListFrame(customtkinter.CTkScrollableFrame):
 
         self.db.commit()
 
-        records = cursor.execute('SELECT * FROM STOCK_LOCATION;').fetchall()
-        cursor.close()
         self.stock_location_initialize()
-        return records
+        return None
 
 
 
@@ -96,6 +97,7 @@ class StockLocation(customtkinter.CTkFrame):
         
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(2, weight=1)
         
         self.db = database_connection()
 
@@ -104,10 +106,12 @@ class StockLocation(customtkinter.CTkFrame):
         self.id= instance[0]
         self.id_odoo = customtkinter.CTkLabel(self, text=instance[1], compound="left", padx=5, width=200, anchor="w", text_color=color)
         self.location = customtkinter.CTkLabel(self, text=instance[2], compound="left", padx=5, width=400, anchor="w", text_color=color)
+        self.company = customtkinter.CTkLabel(self, text=instance[3], compound="left", padx=5, width=200, anchor="w", text_color=color)
+
         
         self.id_odoo.grid(row=0, column=0, pady=(5, 5), sticky="w")
         self.location.grid(row=0, column=1, pady=(5, 5), sticky="w")
-
+        self.company.grid(row=0, column=2, pady=(5, 5), sticky="w")
     
         
 
@@ -127,6 +131,7 @@ class StockLocationFrame(customtkinter.CTkFrame):
         # add widgets onto the frame, for example:
         self.grid_rowconfigure(1, weight=1)  # configure grid system
         self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=0)
 
         self.db= database_connection
 
