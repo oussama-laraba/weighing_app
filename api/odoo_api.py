@@ -236,3 +236,28 @@ class OdooStockapi(OdooConnection):
         model = 'stock.production.lot'
         if val_dict:
             self.create(model,val_dict)
+
+    def get_lot_ids(self):
+        model = 'stock.production.lot'
+        lot_ids = self.get_ids(model)
+        return lot_ids
+
+    def get_lot_records(self , fields = ['company_id','display_name' , 'product_id' , 'product_qty',] ):
+        model = 'stock.production.lot'
+        lot_ids = []
+        lot_ids = self.get_lot_ids()
+        if lot_ids:
+            lot_ids_recs = self.get_records(model,lot_ids ,fields)
+        return lot_ids_recs
+
+
+
+url = 'http://192.168.1.98:8069'
+db = 'bilbao_test_2'
+user = 'admin@dzexpert.com'
+key = '9691c22a00c554bb26586520ef7f19669583e2d9'
+
+connection = OdooStockapi(url,db,user,key)
+# print(connection.get_lot_records()[0])
+
+print(connection.get_stock_locations(fields=[])[0].keys())
