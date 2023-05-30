@@ -12,19 +12,19 @@ class ServerListFrame(customtkinter.CTkScrollableFrame):
         self.grid_columnconfigure(4, weight=1)
 
         self.db = database_connection()
-        url = customtkinter.CTkLabel(self, text="Url",  padx=5, anchor="w")
-        port = customtkinter.CTkLabel(self, text='Port', padx=5, anchor="w", justify="center")
-        database = customtkinter.CTkLabel(self, text='Database', padx=5, anchor="w", justify="center")
-        key = customtkinter.CTkLabel(self, text="Key",  padx=5, anchor="w")
+        url = customtkinter.CTkLabel(self, text="Url", anchor="w", width=300 )
+        port = customtkinter.CTkLabel(self, text='Port', anchor="w", width=100)
+        database = customtkinter.CTkLabel(self, text='Database', anchor="w", width=200)
+        key = customtkinter.CTkLabel(self, text="Key", width=400,  anchor="w")
 
-        actions = customtkinter.CTkLabel(self, text='Actions', width= 10,padx=5, anchor="center",justify="left")
+        actions = customtkinter.CTkLabel(self, text='Actions', width= 220, anchor="w")
 
         
         url.grid(row=0, column=0, pady=(0, 10), sticky="w")
         port.grid(row=0, column=1, pady=(0, 10), sticky="w")
         database.grid(row=0, column=2, pady=(0, 10), sticky="w")
         key.grid(row=0, column=3, pady=(0, 10), sticky="w")
-        actions.grid(row=0, column=4,  columnspan=2,  pady=(0, 10), padx=5,sticky="w")
+        actions.grid(row=0, column=4,  columnspan=2,  pady=(0, 10), padx=(15, 10),  sticky="w")
         
         self.command = command
 
@@ -33,7 +33,7 @@ class ServerListFrame(customtkinter.CTkScrollableFrame):
     def add_item(self, instance, color, bg_color):
 
         server = Server(master=self, instance=instance, color=color, fg_color= bg_color)
-        server.grid(row=len(self.server_list)+1, column=0, columnspan=6, pady=(0, 10), sticky="nesw")
+        server.grid(row=len(self.server_list)+1, column=0, columnspan=6, pady=(0, 10), sticky="nsew")
         self.server_list.append(server)
 
     
@@ -189,10 +189,10 @@ class Server(customtkinter.CTkFrame):
         self.server_list = server_list
 
         self.id= instance[0]
-        self.url = customtkinter.CTkLabel(self, text=instance[1], compound="left", padx=5, width=200, anchor="w", text_color=color)
-        self.port = customtkinter.CTkLabel(self, text=instance[2], compound="left", padx=5, width=200, anchor="w", text_color=color)
-        self.database = customtkinter.CTkLabel(self, text=instance[3], compound="left", padx=5, width=200, anchor="w", text_color=color)
-        self.key = customtkinter.CTkLabel(self, text=instance[4], compound="left", padx=5, width=200, anchor="w", text_color=color)
+        self.url = customtkinter.CTkLabel(self, text=instance[1], compound="left", width=300, anchor="w", text_color=color)
+        self.port = customtkinter.CTkLabel(self, text=instance[2], compound="left", width=100, anchor="w", text_color=color)
+        self.database = customtkinter.CTkLabel(self, text=instance[3], compound="left", width=200, anchor="w", text_color=color)
+        self.key = customtkinter.CTkLabel(self, text=instance[4], compound="left", width=400, anchor="w", text_color=color)
         self.edit = customtkinter.CTkButton(self, text="Edit", width=100, height=24, command = self.edit_item)
         self.delete = customtkinter.CTkButton(self, text="Delete", width=100, height=24,  command = self.delete_item)
         

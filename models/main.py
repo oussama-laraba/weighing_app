@@ -34,7 +34,7 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.company_values = []
         self.comany_label = customtkinter.CTkLabel(self.company_selection_frame, text="Company")
         self.comany_label.grid(row=0, column=0, sticky="w")
-        self.company = customtkinter.CTkOptionMenu(self.company_selection_frame, values=[],
+        self.company = customtkinter.CTkOptionMenu(self.company_selection_frame, values=['NO COMPANIES'],
                                                 width=450,
                                                 command=self.company_callback)
         self.company.grid(row=1, column=0, sticky="w")
@@ -48,7 +48,7 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.location_values_id = {}
         self.location_label = customtkinter.CTkLabel(self.location_selection_frame, text="Location")
         self.location_label.grid(row=0, column=0, sticky="w")
-        self.location = customtkinter.CTkOptionMenu(self.location_selection_frame, values=["location 1", "location 2"],
+        self.location = customtkinter.CTkOptionMenu(self.location_selection_frame, values=["NO EMPLACEMENTS"],
                                                 width=450,
                                                 command=self.location_callback)
         self.location.grid(row=1, column=0, sticky="w")
@@ -66,7 +66,7 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.product_label = customtkinter.CTkLabel(self.product_selection_frame, text="Produit")
         self.product_label.grid(row=0, column=0, sticky="w")
         self.product_var = customtkinter.StringVar(value="option 2")
-        self.product = customtkinter.CTkOptionMenu(self.product_selection_frame, values=["produit 1", "produit 2"],
+        self.product = customtkinter.CTkOptionMenu(self.product_selection_frame, values=["NO PRODUCTS"],
                                                 width=300,
                                                 command=self.product_callback,
                                                 variable=self.product_var)
@@ -137,20 +137,21 @@ class SideBarFrame(customtkinter.CTkFrame):
     def load_companies(self):
         cursor = self.db.cursor()
         companies = cursor.execute('SELECT DISTINCT COMPANY_ID FROM STOCK_LOCATION;').fetchall()
-        self.company_values = [company[0] for company in companies]
-        self.company.configure(values=self.company_values)
-        self.company.set(companies[0][0])
+        if companies:
+            self.company_values = [company[0] for company in companies]
+            self.company.configure(values=self.company_values)
+            self.company.set(companies[0][0])
         cursor.close()
 
 
     def load_locations(self):
         cursor = self.db.cursor()
         id_location = cursor.execute('SELECT ODOO_ID, LOCATION FROM STOCK_LOCATION WHERE COMPANY_ID = "{}";'.format(self.company.get())).fetchall()
-
-        self.location_values_id = { location[1]:location[0] for location in id_location }
-        locations = list(self.location_values_id.keys())
-        self.location.configure(values=locations)
-        self.location.set(locations[0])
+        if id_location:
+            self.location_values_id = { location[1]:location[0] for location in id_location }
+            locations = list(self.location_values_id.keys())
+            self.location.configure(values=locations)
+            self.location.set(locations[0])
         cursor.close()
 
 
@@ -161,23 +162,24 @@ class SideBarFrame(customtkinter.CTkFrame):
         #                             INNER JOIN PRODUCT_LOCATION AS PL ON P.ID = PL.PRODUCT_ID\
         #                             INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID\
         #                             AND  SL.LOCATION = "{}";'.format(self.location.get())).fetchall()
-
         products = main_product_stock(self.location_values_id[self.location.get()])
-        self.product_id_values_quantity = [[ product['product_id'][0], product['product_id'][1],\
-                                            product['quantity'] ] for product in products]
         if products:
+
+            self.product_id_values_quantity = [[ product['product_id'][0], product['product_id'][1],\
+                                            product['quantity'], product['product_uom_id'][1] ] for product in products]
+            
             product_values = [product[1] for product in self.product_id_values_quantity]
             self.product.configure(values=product_values)
             self.product.set(self.product_id_values_quantity[0][1])
             color = 'green' if self.product_id_values_quantity[0][2] > 0 else 'red'
-            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,}'\
-                            .format(round(self.product_id_values_quantity[0][2], 2)).replace(',', ' '), text_color=color)
+            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,} {}'\
+                            .format(round(self.product_id_values_quantity[0][2], 2),self.product_id_values_quantity[0][3]).replace(',', ' '), text_color=color)
         else:
             self.product.configure(values=['NO PRODUCT'])
             self.product.set('NO PRODUCT')
             self.product_disponible_quantity_label.configure(text = 'Quantite disponible : 0', text_color='black')
 
-        print(self.product_var.get())
+
         
 
 
@@ -197,8 +199,8 @@ class SideBarFrame(customtkinter.CTkFrame):
             else: self.product.set(values_quantity[0][0])
 
             color = 'green' if values_quantity[0][1] > 0 else 'red'
-            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,}'\
-                .format(round(values_quantity[0][1], 2)).replace(',', ' '), text_color=color)
+            self.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,} {}'\
+                .format(round(values_quantity[0][1], 2), self.product_id_values_quantity[0][3]).replace(',', ' '), text_color=color)
 
         else:
             self.product.configure(values = ['NO PRODUCT'])
@@ -225,8 +227,8 @@ class SideBarFrame(customtkinter.CTkFrame):
         for product in self.product_id_values_quantity:
             if product[1] == product_name:
                 color = 'green' if product[2] > 0 else 'red'
-                self.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,}'\
-                        .format(round(product[2],2)).replace(',', ' '), text_color=color)
+                self.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,} {}'\
+                        .format(round(product[2],2), self.product_id_values_quantity[0][3]).replace(',', ' '), text_color=color)
 
 
     def create_code_bar_button(self):
