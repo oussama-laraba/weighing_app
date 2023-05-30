@@ -6,6 +6,8 @@ from models.server import ServerFrame
 from models.user import  UserFrame
 from models.stock_location import StockLocationFrame
 from models.product import ProductFrame
+from models.lot import LotFrame
+
 from models.main import MainFrame
 
 global server_list
@@ -29,14 +31,20 @@ class App2(customtkinter.CTk):
         self.product_menu = tk.Menu(self.menubar,  tearoff=0)
         self.stock_menu = tk.Menu(self.menubar,  tearoff=0)
         self.config_menu = tk.Menu(self.menubar,  tearoff=0)
-
+        self.lot_menu = tk.Menu(self.menubar,  tearoff=0)
 
         self.main_menu.add_command(
             label="main",
-            command= lambda: self.select_main_frame(),
+            command= lambda: self.select_main_frame('main'),
             background="white"
         )
-
+        self.main_menu.add_command(
+            label="Lots",
+            command=lambda: self.select_main_frame('lot'),
+            background="white"
+        )
+        
+        
         self.config_menu.add_command(
             label='Servers',
             command=lambda: self.select_config_frame_by_name('servers'),
@@ -103,7 +111,7 @@ class App2(customtkinter.CTk):
             menu=self.config_menu
         )
 
-        
+
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -115,7 +123,8 @@ class App2(customtkinter.CTk):
 
 
         self.server_frame = ServerFrame(master=self, fg_color='white')
-
+        
+        self.lot_frame = LotFrame(master=self, fg_color='white')
 
         self.user_frame = UserFrame(master=self, fg_color='white')
 
@@ -125,19 +134,26 @@ class App2(customtkinter.CTk):
 
         self.stockable_product_frame = ProductFrame(master=self, fg_color='white')
 
-
-
         
         # create scrollable label and button frame
     def close_main_frame(self):
         self.main_frame.grid_forget()
+        self.lot_frame.grid_forget()
 
-    def select_main_frame(self):
+    def select_main_frame(self,name):
         self.close_config_frames()
         self.close_product_frames()
         self.close_stock_frames()
-        
-        self.main_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
+
+        if name == "main":
+            self.main_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
+        else:
+            self.main_frame.grid_forget()
+
+        if name == "lot":
+            self.lot_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
+        else:
+            self.lot_frame.grid_forget()
     
 
     def close_config_frames(self):
