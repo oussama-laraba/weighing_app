@@ -85,27 +85,43 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.product_quantity_frame = customtkinter.CTkFrame(master=self,  fg_color='#D2D7D3')
         self.product_quantity_frame.grid(row=3, column=0, padx=15, pady=(10,10))
         self.product_quantity_frame.grid_columnconfigure(0, weight=1)
+        self.product_quantity_frame.grid_columnconfigure(1, weight=1)
+        self.product_quantity_frame.grid_columnconfigure(2, weight=1)
 
         self.product_disponible_quantity_label = customtkinter.CTkLabel(self.product_quantity_frame, text="", font=('', 14))
-        self.product_disponible_quantity_label.grid(row=0, column=0, sticky="w")
+        self.product_disponible_quantity_label.grid(row=0, column=0, columnspan=3, sticky="w")
 
         self.product_quantity_label = customtkinter.CTkLabel(self.product_quantity_frame, text="Quantite")
         self.product_quantity_label.grid(row=1, column=0, sticky="w")
 
-        self.product_quantity = customtkinter.CTkEntry(self.product_quantity_frame,
-                                                placeholder_text= 'Produit Quantité',
-                                                width=450)
-        self.product_quantity.grid(row=2, column=0, sticky="w",  pady=(0,10))
+        self.product_quantity = customtkinter.CTkEntry(self.product_quantity_frame, width=150)
+        self.product_quantity.grid(row=2, column=0, sticky="w", pady=(0,10))
         self.product_quantity.insert(0,'text')
         self.product_quantity.configure(state='disabled')
 
+
+        self.product_date_label = customtkinter.CTkLabel(self.product_quantity_frame, text="Date")
+        self.product_date_label.grid(row=1, column=1, padx=(5,5), sticky="w")
+
+        self.product_date = customtkinter.CTkEntry(self.product_quantity_frame, width=150)
+        self.product_date.grid(row=2, column=1, sticky="w", padx=(5,5),  pady=(0,10))
+        self.product_date.insert(0,'2023-05-03')
+        self.product_date.configure(state='disabled')
+
+        self.product_time_label = customtkinter.CTkLabel(self.product_quantity_frame, text="Time")
+        self.product_time_label.grid(row=1, column=2, sticky="w")
+
+        self.product_time = customtkinter.CTkEntry(self.product_quantity_frame, width=150)
+        self.product_time.grid(row=2, column=2, sticky="w", pady=(0,10))
+        self.product_time.insert(0,'14:55')
+        self.product_time.configure(state='disabled')
 
         self.confirm_product_quantity_label = customtkinter.CTkLabel(self.product_quantity_frame, text="Confirme quantite")
         self.confirm_product_quantity_label.grid(row=3, column=0, sticky="w")
 
         self.confirm_product_quantity = customtkinter.CTkEntry(self.product_quantity_frame,
                                                 placeholder_text= 'Produit Quantité',
-                                                width=450)
+                                                width=150)
         self.confirm_product_quantity.grid(row=4, column=0, sticky="w")
         self.confirm_product_quantity.insert(0,'text')
         self.confirm_product_quantity.configure(state='disabled')
@@ -210,17 +226,13 @@ class SideBarFrame(customtkinter.CTkFrame):
 
 
     def company_callback(self, company):
-        print("company dropdown clicked:", company)
         self.load_locations()
         self.load_products()
 
     def location_callback(self, location):
-        print("location dropdown clicked:", location)
-    
         self.load_products()
 
     def product_callback(self, product_name):
-        print("product dropdown clicked:", product_name)
         if len(product_name)> 30:
             self.product.set(product_name[:30]+' ...')
 
@@ -232,9 +244,7 @@ class SideBarFrame(customtkinter.CTkFrame):
 
 
     def create_code_bar_button(self):
-        print('i am now creating the code a bar image and i will show it now')
-        
-        gen_bar_code(sequence = '12345678910111')      
+        gen_bar_code(sequence = '12345678910111')     
 
         bar_code_img = customtkinter.CTkImage(Image.open(os.path.join('static/images', "bar_code.png")), size=(200, 150))
 
@@ -245,9 +255,6 @@ class SideBarFrame(customtkinter.CTkFrame):
         self.bar_code_image_label.grid(row=1, column=1, columnspan=2, padx=15, pady=(10, 10), sticky="we")
         self.button_create_bar_code.grid_forget()
         self.button_print.grid(row=2, column=1, columnspan=2, padx=15, pady=(10,10), sticky="w")
-
-
-
 
 
 
@@ -291,24 +298,15 @@ class ActionFrame(customtkinter.CTkFrame):
                                                 width=100)
         self.button_reset.grid(row=2, column=1, columnspan=2, padx=15, pady=(10,10), sticky="we")
 
-
-        self.button_print = customtkinter.CTkButton(self, text="Print code à bar",
-                                                command=self.print_bar_code,
-                                                width=450)
-        
-        
-    
-    def print_bar_code(self):
-        print('i am now printing the bar code')
-
-
     def reset_button(self):
-        print('button reset pressed')
         self.side_bar.company.set(self.side_bar.company.cget("values")[0])
         self.side_bar.load_locations()
         self.side_bar.load_products()
 
         self.side_bar.product_entry.delete(0,tk.END)
+        self.side_bar.product_date.delete(0,tk.END)
+        self.side_bar.product_entry.delete(0,tk.END)
+
         self.side_bar.product_quantity.configure(state='normal')
         self.side_bar.product_quantity.delete(0,tk.END)
         self.side_bar.product_quantity.configure(state='disabled')
@@ -316,6 +314,14 @@ class ActionFrame(customtkinter.CTkFrame):
         self.side_bar.confirm_product_quantity.configure(state='normal')
         self.side_bar.confirm_product_quantity.delete(0,tk.END)
         self.side_bar.confirm_product_quantity.configure(state='disabled')
+
+        self.side_bar.product_date.configure(state='normal')
+        self.side_bar.product_date.delete(0,tk.END)
+        self.side_bar.product_date.configure(state='disabled')
+
+        self.side_bar.product_time.configure(state='normal')
+        self.side_bar.product_time.delete(0,tk.END)
+        self.side_bar.product_time.configure(state='disabled')
         # self.confirm_product_quantity.configure(text='sfgsfg')
 
         self.side_bar.extra_info.delete('1.0',tk.END)

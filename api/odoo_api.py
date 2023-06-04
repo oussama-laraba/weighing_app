@@ -69,7 +69,7 @@ class OdooConnection:
             else :
                 return False
         except xmlrpc.client.Fault as fault:
-            print(fault.faultString)
+            (fault.faultString)
             return None
 
     def check_access_right (self, model, access_right = 'read'):
@@ -211,7 +211,6 @@ class OdooStockapi(OdooConnection):
         if internal_location_ids:
             model = 'stock.quant'
             internal_stock_ids =  self.get_ids(model,['location_id','in',internal_location_ids],offset,limit)
-            # print(fields)
             stock_location = self.get_records(model,internal_stock_ids ,fields)
         return stock_location 
     
@@ -250,14 +249,3 @@ class OdooStockapi(OdooConnection):
             lot_ids_recs = self.get_records(model,lot_ids ,fields)
         return lot_ids_recs
 
-
-
-url = 'http://192.168.1.98:8069'
-db = 'bilbao_test_2'
-user = 'admin@dzexpert.com'
-key = '9691c22a00c554bb26586520ef7f19669583e2d9'
-
-connection = OdooStockapi(url,db,user,key)
-# print(connection.get_lot_records()[0])
-
-print(connection.get_stock_locations(fields=[])[0].keys())
