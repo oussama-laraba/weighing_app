@@ -1,17 +1,15 @@
 import tkinter as tk
 import customtkinter
-from models.database_connection import database_connection
-from models.stock_location import StockLocationFrame
-from models.product import ProductFrame
+from models.database_connection import DbConnection
 from models.lot import LotFrame
 
 from controllers.server_controller import SeverController
 from controllers.user_controller import UserController
 from controllers.stock_location_controller import StockLocationController
 from controllers.product_controller import ProductController
+from controllers.main_controller import MainController
 
 
-from models.main import MainFrame
 
 global server_list
 global user_list
@@ -24,7 +22,6 @@ class App2(customtkinter.CTk):
         self.geometry("1200x750")
         customtkinter.set_appearance_mode("light")
         self.configure(fg_color='white')
-
 
         ## menu
         self.menubar = tk.Menu(self, background='white')
@@ -119,27 +116,28 @@ class App2(customtkinter.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        self.db = database_connection()
+        db = DbConnection().db
 
-        self.main_frame= MainFrame(master=self, fg_color='#D2D7D3')
+        # self.main_frame= MainFrame(master=self, fg_color='#D2D7D3')
+        # self.main_frame.grid(row=1, column=1, sticky="nsew")
+        
+        self.main_frame = MainController(view_master=self, db=db).main_frame
         self.main_frame.grid(row=1, column=1, sticky="nsew")
-
-
         #self.server_frame = ServerFrame(master=self, fg_color='white')
         #self.server_frame = ServerView(master=self, fg_color='white')
-        self.server_frame = SeverController(view_master=self).server_frame
+        self.server_frame = SeverController(view_master=self, db=db).server_frame
 
-        self.lot_frame = LotFrame(master=self, fg_color='white')
+        self.lot_frame = LotFrame(master=self, db=db, fg_color='white')
 
         #self.user_frame = UserFrame(master=self, fg_color='white')
-        self.user_frame = UserController(view_master=self).user_frame
+        self.user_frame = UserController(view_master=self, db=db).user_frame
 
 
         #self.stock_location_frame = StockLocationFrame(master=self, fg_color='white')
-        self.stock_location_frame = StockLocationController(view_master = self).stock_location_frame
+        self.stock_location_frame = StockLocationController(view_master = self, db=db).stock_location_frame
 
         #self.stockable_product_frame = ProductFrame(master=self, fg_color='white')
-        self.stockable_product_frame = ProductController(view_master=self).product_frame
+        self.stockable_product_frame = ProductController(view_master=self, db=db).product_frame
         
         # create scrollable label and button frame
     def close_main_frame(self):

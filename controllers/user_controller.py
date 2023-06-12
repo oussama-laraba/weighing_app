@@ -9,11 +9,11 @@ from models.user import UserModel
 
 class UserController():
 
-    def __init__(self, view_master= None, columns= None, db_name= None):
+    def __init__(self, view_master= None, db=None, columns= None, db_name= None):
 
         self.columns= columns
         self.db_name= db_name
-        self.model= UserModel()
+        self.model= UserModel(db=db)
         self.view_master= view_master
         self.user_frame = self.get_view()
         

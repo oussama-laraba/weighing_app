@@ -6,7 +6,6 @@ sys.path.append('../weighing')
 import tkinter as tk
 import customtkinter as ctk
 
-from models.database_connection import database_connection
 
 
 class ScrollableListFrame(ctk.CTkScrollableFrame):

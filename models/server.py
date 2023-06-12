@@ -1,9 +1,8 @@
-from models.database_connection import database_connection
 
 class ServerModel():
 
-    def __init__(self):
-        self.db = database_connection()
+    def __init__(self, db=None):
+        self.db = db
 
     def select_query(self, columns='*', conditions= None):
         print("perform query select")

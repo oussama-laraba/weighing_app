@@ -1,11 +1,10 @@
 
-from models.database_connection import database_connection
 
 
 class UserModel():
 
-    def __init__(self):
-        self.db = database_connection()
+    def __init__(self, db=None):
+        self.db = db
 
     def get_data(self):
         cursor = self.db.cursor()

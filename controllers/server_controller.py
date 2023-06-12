@@ -9,11 +9,11 @@ from models.server import ServerModel
 
 class SeverController():
 
-    def __init__(self, view_master= None, columns= None, db_name= None):
+    def __init__(self, view_master= None, db=None, columns= None, db_name= None):
 
         self.columns= columns
         self.db_name= db_name
-        self.model= ServerModel()
+        self.model= ServerModel(db=db)
         self.view_master= view_master
         self.server_frame = self.get_view()
         

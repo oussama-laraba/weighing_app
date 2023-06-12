@@ -1,6 +1,5 @@
 import tkinter as tk
 import customtkinter
-from models.database_connection import database_connection
 
 class LotListFrame(customtkinter.CTkScrollableFrame):
     def __init__(self, master, command=None, db= None, **kwargs):
@@ -11,7 +10,7 @@ class LotListFrame(customtkinter.CTkScrollableFrame):
         self.grid_columnconfigure(3, weight=1)
         self.grid_columnconfigure(4, weight=1)
         self.grid_columnconfigure(5, weight=1)
-        self.db = database_connection()
+        self.db = db
         lot = customtkinter.CTkLabel(self, text="Lot",  padx=5, anchor="w")
         produit = customtkinter.CTkLabel(self, text='Produit', padx=5, anchor="w", justify="center")
         qty = customtkinter.CTkLabel(self, text='Quantité', padx=5, anchor="w", justify="center")
@@ -34,7 +33,7 @@ class LotListFrame(customtkinter.CTkScrollableFrame):
 
     def add_item(self, instance, color, bg_color):
 
-        lot = Lot(master=self, instance=instance, color=color, fg_color= bg_color)
+        lot = Lot(master=self, db=self.db, instance=instance, color=color, fg_color= bg_color)
         lot.grid(row=len(self.lot_list)+1, column=0, columnspan=6, pady=(0, 10), sticky="nesw")
         self.lot_list.append(lot)
 
@@ -53,14 +52,14 @@ class LotListFrame(customtkinter.CTkScrollableFrame):
 
 class EditLot(customtkinter.CTk):
     
-    def __init__(self, edit=False, lot=None,lot_list=None):
+    def __init__(self, edit=False, db=None, lot=None,lot_list=None):
         super().__init__()
 
         self.title("Lot")
         self.geometry("360x350")
         self.grid_columnconfigure(0, weight=1)
 
-        self.db = database_connection()
+        self.db = db
         self.lot_list = lot_list
 
         if edit:
@@ -121,7 +120,7 @@ class EditLot(customtkinter.CTk):
 
 
 class Lot(customtkinter.CTkFrame):
-    def __init__(self, master, instance=None,color=None, lot_list=None, **kwargs ):
+    def __init__(self, master, db= None, instance=None,color=None, lot_list=None, **kwargs ):
         super().__init__(master, **kwargs)
         
         self.grid_columnconfigure(0, weight=1)
@@ -131,7 +130,7 @@ class Lot(customtkinter.CTkFrame):
         self.grid_columnconfigure(4, weight=0)
         
         
-        self.db = database_connection()
+        self.db = db
 
         self.lot_list = lot_list
 
@@ -154,7 +153,7 @@ class Lot(customtkinter.CTkFrame):
 
     def edit_item(self):
         
-        edit_lot = EditLot(edit=True, lot=self)
+        edit_lot = EditLot(edit=True,db =self.db, lot=self)
         edit_lot.mainloop()
 
     def display_item(self):
@@ -162,19 +161,17 @@ class Lot(customtkinter.CTkFrame):
     
 
 class LotFrame(customtkinter.CTkFrame):
-    def __init__(self, master, **kwargs ):
+    def __init__(self, master, db=None, **kwargs ):
         super().__init__(master, **kwargs)
 
         # add widgets onto the frame, for example:
         self.grid_rowconfigure(1, weight=1)  # configure grid system
         self.grid_columnconfigure(0, weight=1)
 
-        self.db= database_connection()
-
         self.lot_title = customtkinter.CTkLabel(master=self, text="Liste des Lots", fg_color="white")
         self.lot_title.grid(row=0, column=0,  padx=15, pady=5, sticky="w")
 
-        self.lot_list = LotListFrame(master=self, corner_radius=0, db = self.db, fg_color='#ededed')
+        self.lot_list = LotListFrame(master=self, corner_radius=0, db = db, fg_color='#ededed')
         self.lot_list.grid(row=1, column=0, columnspan=2,  padx=15, sticky="nsew")
         self.lot_list.lot_initialize()
 
