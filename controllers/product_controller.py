@@ -8,15 +8,14 @@ from models.product import ProductModel, ProductLocationModel
 
 from models.stock_location import StockLocationModel
 
-from api.stock import ApiConnection
 
 
 class ProductController():
-    def __init__(self, view_master= None, db=None, columns= None, db_name= None):
+    def __init__(self, view_master= None, db=None, api_connection=None, columns= None, db_name= None):
 
         self.columns= columns
         self.db_name= db_name
-        self.api_connection = ApiConnection()
+        self.api_connection = api_connection
         self.model= ProductModel(db=db)
         self.stock_location_model = StockLocationModel(db=db)
         self.product_location_model = ProductLocationModel(db=db)
@@ -57,7 +56,6 @@ class ProductController():
                             print('add product')
                 else:
 
-                    print('we are on else now',rec['id'])
                     db_product_location_copy = self.model.get_product_locations(rec['id'])
                     db_product_location = list()
                     for location in db_product_location_copy:
@@ -82,33 +80,14 @@ class ProductController():
                             
 
             product_ids = product_ids[:-1]
-            print('\n\n\n\n\n')
-            print(product_ids)
+
             self.model.delete_not_in_query(product_ids)
             self.initialize_view(self.product_frame)
-    
-
-
-        # # get stock location from odoo api
-        # stock_location = get_locations(['id','location_id' , 'company_id', 'display_name'])
-        # # get all stock location ids from sqlite database
-        # db_ids= self.model.select_query(columns=['ODOO_ID'])
-
-        # db_ids_dict = {}
-        # db_ids = list(map(lambda x: db_ids_dict.update({str(x[0]): 1}), db_ids))
-        
-        # # string have all
-        # stock_location_ids = ''
-        # for rec in stock_location:
-        #     stock_location_ids += str(rec['id'])+','
-        #     data = {}
-        #     if not db_ids_dict.get(str(rec['id'])):
-        #         data= {'ODOO_ID': rec['id'], 'LOCATION': rec['display_name'], 'COMPANY_ID': rec['company_id']}
-        #         self.model.create_query(data)
-        # stock_location_ids = stock_location_ids[:-1]
-        # self.model.delete_query(stock_location_ids)
-        # self.initialize_view(self.stock_location_frame)
         pass
+        
+
+
+
         
     def location_callback(self, location):
         print(location)
@@ -120,11 +99,13 @@ class ProductController():
         location_id = self.stock_location_model.select_query(columns=['ODOO_ID','LOCATION'])
         self.location_values_id = { location[1]:location[0] for location in location_id }
         locations = list(self.location_values_id.keys())
+        
         product_view.location.configure(values=locations)
-        product_view.location.set(locations[0])
+        
+        if locations:
+            product_view.location.set(locations[0])
 
         pass
-
 
     def get_view(self):
         product_view = ProductView(master=self.view_master, fg_color='white')
@@ -141,11 +122,14 @@ class ProductController():
         product_view.product_list.frame_list = []
 
         location_id = self.location_values_id.get(product_view.location.get())
-        data = self.model.get_data(location_id)
-        print(location_id)
-        for idx,instance in enumerate(data):
-            instance_dict = {'id': instance[0],'ODOO_ID': instance[1], 'PRODUCT':instance[2]}
+        
+        data = None
+        if location_id:
+            data = self.model.get_data(location_id)
+        if data:
+            for idx,instance in enumerate(data):
+                instance_dict = {'id': instance[0],'ODOO_ID': instance[1], 'PRODUCT':instance[2]}
 
-            color, fg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
-            product_view.product_list.create_elements(instance_dict, color, fg_color)
+                color, fg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
+                product_view.product_list.create_elements(instance_dict, color, fg_color)
         #server_view.server_list.server_initialize(data)

@@ -1,6 +1,10 @@
+import threading
+
 import tkinter as tk
 import customtkinter
 from models.database_connection import DbConnection
+from api.stock import ApiConnection
+
 from models.lot import LotFrame
 
 from controllers.server_controller import SeverController
@@ -9,6 +13,7 @@ from controllers.stock_location_controller import StockLocationController
 from controllers.product_controller import ProductController
 from controllers.main_controller import MainController
 
+from helper.weighing import WeighingScaleConnection
 
 
 global server_list
@@ -117,15 +122,15 @@ class App2(customtkinter.CTk):
         self.grid_rowconfigure(1, weight=1)
 
         db = DbConnection().db
+        api_connection = ApiConnection(db=db)
 
         # self.main_frame= MainFrame(master=self, fg_color='#D2D7D3')
         # self.main_frame.grid(row=1, column=1, sticky="nsew")
         
-        self.main_frame = MainController(view_master=self, db=db).main_frame
-        self.main_frame.grid(row=1, column=1, sticky="nsew")
-        #self.server_frame = ServerFrame(master=self, fg_color='white')
-        #self.server_frame = ServerView(master=self, fg_color='white')
+        
+        
         self.server_frame = SeverController(view_master=self, db=db).server_frame
+        #self.server_frame.grid(row=1, column=1, sticky="nsew")
 
         self.lot_frame = LotFrame(master=self, db=db, fg_color='white')
 
@@ -134,14 +139,21 @@ class App2(customtkinter.CTk):
 
 
         #self.stock_location_frame = StockLocationFrame(master=self, fg_color='white')
-        self.stock_location_frame = StockLocationController(view_master = self, db=db).stock_location_frame
+        self.stock_location_frame = StockLocationController(view_master = self, db=db, api_connection=api_connection).stock_location_frame
 
         #self.stockable_product_frame = ProductFrame(master=self, fg_color='white')
-        self.stockable_product_frame = ProductController(view_master=self, db=db).product_frame
+        self.stockable_product_frame = ProductController(view_master=self, db=db, api_connection=api_connection).product_frame
         
+        self.main_controller = MainController(view_master=self, db=db, api_connection=api_connection)
+        self.main_frame = self.main_controller.main_frame
+        self.main_frame.grid(row=1, column=1, sticky="nsew")
+        self.main_controller.open_thread()
+
         # create scrollable label and button frame
     def close_main_frame(self):
         self.main_frame.grid_forget()
+        self.main_controller.close_thread()
+        self.main_controller.reset_button()
         self.lot_frame.grid_forget()
 
     def select_main_frame(self,name):
@@ -151,8 +163,11 @@ class App2(customtkinter.CTk):
 
         if name == "main":
             self.main_frame.grid(row=1, column=1, sticky="nsew")
+            self.main_controller.open_thread()
         else:
             self.main_frame.grid_forget()
+            self.main_controller.close_thread()
+            self.main_controller.reset_button()
 
         if name == "lot":
             self.lot_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
@@ -189,6 +204,7 @@ class App2(customtkinter.CTk):
     def select_stock_frame_by_name(self, name):
         
         self.close_main_frame()
+        
         self.close_config_frames()
         self.close_product_frames()
 
@@ -217,5 +233,21 @@ class App2(customtkinter.CTk):
 
 
 if __name__ == "__main__":
+    
+    
+    
+
     app = App2()
     app.mainloop()
+    app.main_controller.close_thread()
+
+
+
+
+
+    # reading_thread = threading.Thread(target= read_weighing, args=(10,))
+    # reading_thread.start()
+
+
+
+        

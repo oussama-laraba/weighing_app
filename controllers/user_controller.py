@@ -5,6 +5,7 @@ sys.path.append('../weighing')
 from templates.scrollable_list_frame import ScrollableListFrame, DeleteConfirmation
 from views.user_view import UserView, CreateUpdateUser
 from models.user import UserModel
+from models.server import ServerModel
 
 
 class UserController():
@@ -14,6 +15,7 @@ class UserController():
         self.columns= columns
         self.db_name= db_name
         self.model= UserModel(db=db)
+        self.server_model= ServerModel(db=db)
         self.view_master= view_master
         self.user_frame = self.get_view()
         
@@ -23,10 +25,10 @@ class UserController():
         if element:
             print(element)
             print('update')
-            CreateUpdateUser(edit=True, user=element, validation_function= self.form_validation, button= self.edit)
+            CreateUpdateUser(server_model= self.server_model, user=element, button= self.edit, validation_function= self.form_validation)
         else:
             print('create')
-            CreateUpdateUser(button= self.create, validation_function= self.form_validation,)
+            CreateUpdateUser(server_model= self.server_model, button= self.create, validation_function= self.form_validation)
 
     
     def create(self, data):
@@ -67,7 +69,7 @@ class UserController():
         records = self.model.select_query(columns=['ID'], conditions = check_duplicate_condition)
 
         # if the record who have the same conf it's not the same
-        if len(records) > 1 or (len(records) == 1 and (self.id,) not in records):
+        if len(records) > 1 or (len(records) == 1 and (element.id,) not in records):
             return 'Cette enregistrement il exist déja '
 
         return None
@@ -96,7 +98,9 @@ class UserController():
     def initialize_view(self, user_view):
         data = self.model.get_data()
         for idx,instance in enumerate(data):
-            instance_dict = {'id': instance[0],'email': instance[1], 'password':instance[2], 'url_id':instance[3], 'company': instance[4]}
+            instance_dict = {'id': instance[0],'email': instance[1],
+                            'password':''.join('*' for _ in range(len(instance[2]))),
+                            'url_id':instance[3], 'company': instance[4]}
 
             color, fg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
             user_view.user_list.create_elements(instance_dict, color, fg_color)

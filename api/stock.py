@@ -17,28 +17,34 @@ database = DbConnection().db
 
 class ApiConnection():
 
-    def __init__(self):
+    def __init__(self, db=None):
+        self.db = db
         self.api_connection = self.connect_api()
         pass
 
     def connect_api(self):
 
-        cursor = database.cursor()
-        cursor.execute('SELECT S.*, U.EMAIL FROM SERVER AS S, USER AS U\
+        cursor = self.db.cursor()
+        cursor.execute('SELECT S.*, U.EMAIL, U.PASSWORD FROM SERVER AS S, USER AS U\
                         WHERE U.URL_ID = S.ID')
         possible_connection = cursor.fetchall()
+        print(possible_connection)
         for connection in possible_connection:
             url  = connection[1]+':'+str(connection[2])
             db =  connection[3]
-            key = connection[4]
+            #key = connection[4]
+            key= connection[-1]
             user = connection[5]
-            print(url+' '+db+' '+key+' '+user)
+            print('\n\n\n\n')
+            print(len(key))
+            print(url+' '+db+' '+user+' '+key)
+            print('\n\n\n\n')
             try:
                 con = OdooStockapi(url, db, user, key)
                 return con    
             except OSError : 
                 print("odoo server connection problem")
-            
+        cursor.close()
         return None
 
 

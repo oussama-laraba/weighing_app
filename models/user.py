@@ -16,7 +16,6 @@ class UserModel():
         
     
     def select_query(self, columns='*', conditions= None):
-        print("perform query select")
         cursor = self.db.cursor()
         query= 'SELECT'
         for column in columns:

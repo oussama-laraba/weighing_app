@@ -33,17 +33,16 @@ class UserView(ctk.CTkFrame):
 
 class CreateUpdateUser(ctk.CTk):
 
-    def __init__(self, edit=False, user=None, button= None, validation_function= None):
+    def __init__(self, server_model=None,  user=None, button= None, validation_function= None):
         super().__init__()
 
         self.title("User")
         self.geometry("360x350")
         self.grid_columnconfigure(0, weight=1)
         self.button = button
-        self.edit = edit
         self.user = user
-        self.server_model = ServerModel()
-        if self.edit:
+        self.server_model = server_model
+        if self.user:
             text = "Edit user"
         else:
             text = 'Create user'
@@ -53,8 +52,12 @@ class CreateUpdateUser(ctk.CTk):
 
         self.email=ctk.CTkEntry(master=self, width=220, placeholder_text='email')
         self.email.grid(row=1, column=0,  padx=15, pady=5, sticky="ns")
+        
+        if self.user:
+            self.password=ctk.CTkEntry(master=self, width=220, show="*", placeholder_text='******')
+        else:
+            self.password=ctk.CTkEntry(master=self, width=220, placeholder_text='password')
 
-        self.password=ctk.CTkEntry(master=self, width=220, placeholder_text='password')
         self.password.grid(row=2, column=0,  padx=15, pady=5, sticky="ns")
 
 
@@ -80,7 +83,7 @@ class CreateUpdateUser(ctk.CTk):
         if self.user:
             self.id = self.user.id
             self.email.insert(0,self.user.data_dict.get('email').cget('text'))
-            self.password.insert(0,self.user.data_dict.get('password').cget('text'))
+            #self.password.insert(0,self.user.data_dict.get('password').cget('text'))
             self.url_names.set(self.user.data_dict.get('url_id').cget('text'))
             self.company.insert(0,self.user.data_dict.get('company').cget('text'))
             pass
@@ -98,16 +101,16 @@ class CreateUpdateUser(ctk.CTk):
             print('valid')
             data = {}
             
-            data['ID'] = self.user.id if self.edit else None
+            data['ID'] = self.user.id if self.user else None
             data['EMAIL'] = self.email.get().strip()
             data['PASSWORD'] = self.password.get().strip()
             data['URL_ID'] = int(self.url_id)
             data['COMPANY'] = self.company.get().strip()
             self.button(data)
 
-            if self.edit:
+            if self.user:
                 self.user.data_dict.get('email').configure(text = self.email.get())
-                self.user.data_dict.get('password').configure(text = self.password.get())
+                self.user.data_dict.get('password').configure(text = ''.join('*' for _ in range(len(self.password.get()))))
                 self.user.data_dict.get('url_id').configure(text = self.url_names.get())
                 self.user.data_dict.get('company').configure(text = self.company.get())
 

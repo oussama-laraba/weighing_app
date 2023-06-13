@@ -4,20 +4,21 @@ import sys
 sys.path.append('../weighing')
 from models.main import MainModel
 import tkinter as tk
-from api.stock import ApiConnection
 from views.main_view import MainView
 from models.product import  ProductLocationModel
 from models.stock_location import StockLocationModel
 
-
+from helper.weighing import WeighingScaleConnection
+import threading
+import datetime
 
 class MainController():
-    def __init__(self, view_master= None, db= None,  db_name= None):
+    def __init__(self, view_master= None, db= None, api_connection=None,  db_name= None):
 
         self.db_name= db_name
         self.model= MainModel()
         self.db = db
-        self.api_connection = ApiConnection()
+        self.api_connection = api_connection
         self.view_master= view_master
         self.stock_location_model = StockLocationModel(db=db)
         self.product_location_model = ProductLocationModel(db=db)
@@ -25,9 +26,48 @@ class MainController():
         self.location_values_id = {}
         self.product_id_values_quantity = []
         self.main_frame = self.get_view()
+        self.thread = True
+    
+    
+        
+    #reading_thread.start()
+    def open_thread(self):
+        self.reading_thread = threading.Thread(target= self.read_weighing, args=(self,))
+        self.thread = True
+        self.reading_thread.start()
 
+    def close_thread(self):
+        self.thread = False
 
+    def read_weighing(self, main):
+        weighing_connection = WeighingScaleConnection().connection
+        while self.thread:
+            weighing_data = weighing_connection.get_data()
+            if weighing_data:
+                self.change_weighing_data(weighing_data)
 
+    def change_weighing_data(self, data):
+        
+
+        self.main_frame.action_frame.product_quantity.configure(state='normal')
+        self.main_frame.action_frame.product_quantity.delete(0,tk.END)
+        self.main_frame.action_frame.product_quantity.insert(0,data.get('gross'))
+        self.main_frame.action_frame.product_quantity.configure(state='disabled')
+
+        self.main_frame.action_frame.confirm_product_quantity.configure(state='normal')
+        self.main_frame.action_frame.confirm_product_quantity.delete(0,tk.END)
+        self.main_frame.action_frame.confirm_product_quantity.insert(0,data.get('gross'))
+        self.main_frame.action_frame.confirm_product_quantity.configure(state='disabled')
+        
+        self.main_frame.action_frame.product_date.configure(state='normal')
+        self.main_frame.action_frame.product_date.delete(0,tk.END)
+        self.main_frame.action_frame.product_date.insert(0,datetime.date.today())
+        self.main_frame.action_frame.product_date.configure(state='disabled')
+
+        self.main_frame.action_frame.product_time.configure(state='normal')
+        self.main_frame.action_frame.product_time.delete(0,tk.END)
+        self.main_frame.action_frame.product_time.insert(0,datetime.datetime.now().strftime('%H:%M'))
+        self.main_frame.action_frame.product_time.configure(state='disabled')
 
     def get_view(self):
         # buttons = {'load_companies': self.load_companies,
@@ -79,6 +119,7 @@ class MainController():
         #                             INNER JOIN PRODUCT_LOCATION AS PL ON P.ID = PL.PRODUCT_ID\
         #                             INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID\
         #                             AND  SL.LOCATION = "{}";'.format(self.location.get())).fetchall()
+        
         products = self.api_connection.main_product_stock(self.location_values_id[main_view.action_frame.location.get()])
         if products:
 
@@ -95,7 +136,7 @@ class MainController():
             main_view.action_frame.product.configure(values=['NO PRODUCT'])
             main_view.action_frame.product.set('NO PRODUCT')
             main_view.action_frame.product_disponible_quantity_label.configure(text = 'Quantite disponible : 0', text_color='black')
-
+        
 
     def product_check_input(self, event):
         search = self.main_frame.action_frame.product_entry.get()
@@ -184,3 +225,4 @@ class MainController():
         # self.confirm_product_quantity.configure(text='sfgsfg')
 
         self.main_frame.action_frame.extra_info.delete('1.0',tk.END)
+
