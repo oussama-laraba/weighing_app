@@ -9,15 +9,16 @@
 <style>
     h4 {word-wrap: break-word;}
 </style>
-<body style = "border:solid;padding-left:20px;;padding-right:20px;width:200px;" >
+<body style = "margin:0;border:solid;padding:0px 10px;width:200px;" >
     
-    <h4> Produits: <span style="font-weight:normal">{product_name}</span> </h4>
-    <h4> Lot: <span style="font-weight:normal">{product_lot}</span> </h4>
-    <h4> Quantité: <span style="font-weight:normal">{product_qte} </span></h4>
-    <h4> Unité de mesure:<span style="font-weight:normal"> {product_uom} </span></h4>
-    <h4> Information supplementaire:<span style="font-weight:normal"> {Extra_info}</span></h4>
-
-    <img src="../images/bar_code.png" width="110" height="110" alt="" style="margin-left: 25%;">
+    <h4> Produits: <span style="font-weight:normal">[product_name]</span> </h4>
+    <h4> Lot: <span style="font-weight:normal">[product_lot]</span> </h4>
+    <h4> Poids: <span style="font-weight:normal">[product_weight] <span style="font-weight:bold">[product_uom]</span></span></h4>
+    <!-- <h4> Unité de mesure:<span style="font-weight:normal">[product_uom] </span></h4> -->
+    <h4> Quantité en unités: <span style="font-weight:normal">[product_unit_qte]</span></h4>
+    <h4> Information supplementaire:<span style="font-weight:normal">[Extra_info]</span></h4>
+    <div style="text-align: center;"> 
+    <img src="../images/bar_code.png" alt="" style="width:110px;height:110px;">
     
 </body>
 </html>

@@ -2,11 +2,15 @@ import sys
 
 # setting path
 sys.path.append('../weighing')
+import os
+from PIL import Image
 from models.main import MainModel
 import tkinter as tk
+import customtkinter as ctk
 from views.main_view import MainView
 from models.product import  ProductLocationModel
 from models.stock_location import StockLocationModel
+import helper.bar_code as brc
 
 from helper.weighing import WeighingScaleConnection
 import threading
@@ -32,15 +36,17 @@ class MainController():
         
     #reading_thread.start()
     def open_thread(self):
-        self.reading_thread = threading.Thread(target= self.read_weighing, args=(self,))
-        self.thread = True
-        self.reading_thread.start()
+        weighing_connection = WeighingScaleConnection().connection
+        if weighing_connection:
+            self.reading_thread = threading.Thread(target= self.read_weighing, args=(weighing_connection,))
+            self.thread = True
+            self.reading_thread.start()
 
     def close_thread(self):
         self.thread = False
 
-    def read_weighing(self, main):
-        weighing_connection = WeighingScaleConnection().connection
+    def read_weighing(self, weighing_connection):
+        
         while self.thread:
             weighing_data = weighing_connection.get_data()
             if weighing_data:
@@ -184,6 +190,20 @@ class MainController():
     def create_code_bar_button(self):
 
         print('create code bar')
+
+        brc.fill_html_templates(
+            self.main_frame.action_frame.product.get(),
+            '0000007',
+            self.main_frame.action_frame.product_quantity.get(),
+            self.main_frame.action_frame.product_disponible_quantity_label.cget('text').split(' ')[-1],
+            20,
+            self.main_frame.action_frame.extra_info.get('0.0', tk.END)
+        )
+        brc.gen_display_filled_template_snapshot()
+        self.main_frame.show_frame.invoice_image = ctk.CTkImage(Image.open(os.path.join('static/images', "display_filled_template.png")), size=(250, 500))
+        self.main_frame.show_frame.invoice_image_label.configure(
+            image=self.main_frame.show_frame.invoice_image)
+
         # gen_bar_code(sequence = '12345678910111')     
 
         # bar_code_img = ctk.CTkImage(Image.open(os.path.join('static/images', "bar_code.png")), size=(200, 150))

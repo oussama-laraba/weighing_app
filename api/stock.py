@@ -20,7 +20,6 @@ class ApiConnection():
     def __init__(self, db=None):
         self.db = db
         self.api_connection = self.connect_api()
-        pass
 
     def connect_api(self):
 
@@ -101,3 +100,44 @@ class ApiConnection():
 
         return None
 
+
+
+
+def get_stockable_product(con, fields = [] ):
+
+    try: 
+        stockable_products = con.get_stockable_products_records(fields=['id','name'])
+        product_location = con.get_stock_locations(fields = ['id','location_id','product_id','quantity','product_uom_id','company_id'])
+        product_loc = {}
+        for loc in product_location:
+
+            if product_loc.get(loc['product_id'][0]):
+                product_loc[loc['product_id'][0]].append(loc['location_id'][0])
+            else:
+                product_loc[loc['product_id'][0]] =  [loc['location_id'][0]]
+
+
+        product_dict = {}
+        product_list = []
+        for product in stockable_products:
+            product_dict.update({str(product['id']): product['name']})
+            product_list.append({'id': product['id'], 'name': product['name'], 'location_id': product_loc.get(product['id'])})
+
+        return product_list
+    except: 
+        print('Access Denied')
+
+    return None
+
+url  = 'http://demo.dzexpert.com'+':8069'
+db =  'ODOO11_TEST'
+#key = connection[4]
+key= '123456'
+user = 'admin@dzexpert.com'
+print('\n\n\n\n')
+print(len(key))
+print(url+' '+db+' '+user+' '+key)
+print('\n\n\n\n')
+
+# con = OdooStockapi(url, db, user, key)
+# print(get_stockable_product(con))

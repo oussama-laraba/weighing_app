@@ -153,7 +153,7 @@ class ShowFrame(ctk.CTkFrame):
         self.product_image_label = ctk.CTkLabel(self, text="", image=self.product_image)
         self.product_image_label.grid(row=0, column=1, columnspan=2, padx=15, pady=(10,10), sticky="nswe")
 
-        self.invoice_image = ctk.CTkImage(Image.open(os.path.join('static/images', "filled_template.png")), size=(250, 500))
+        self.invoice_image = ctk.CTkImage(Image.open(os.path.join('static/images', "display_filled_template.png")), size=(250, 500))
         self.invoice_image_label = ctk.CTkLabel(self, text="", image=self.invoice_image)
         
         self.invoice_image_label.grid(row=1, column=1, columnspan=2, padx=15, pady=(10, 10), sticky="nswe")

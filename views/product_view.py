@@ -35,8 +35,13 @@ class ProductView(ctk.CTkFrame):
 
         self.refresh_button = ctk.CTkButton(master=self, text="Refresher")
         self.refresh_button.grid(row=0, column=3, padx=15, pady=5, sticky="w")
+        # tk_textbox = tk.Text(self, highlightthickness=0)
+        # tk_textbox.grid(row=0, column=0, sticky="nsew")
 
         self.product_list = ScrollableListFrame(master=self,\
                             labels={'id_odoo': 300, 'Produit': 400},\
                             buttons=buttons)
+        # tk_textbox.configure(yscrollcommand=self.product_list.set)
+
+
         self.product_list.grid(row=1, column=0, columnspan=4,  padx=15, sticky="nsew")
