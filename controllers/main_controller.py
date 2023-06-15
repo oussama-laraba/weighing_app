@@ -31,7 +31,6 @@ class MainController():
         self.product_id_values_quantity = []
         self.main_frame = self.get_view()
         self.thread = True
-        print("data\n\n\n")
     
     
         
@@ -192,20 +191,21 @@ class MainController():
     def create_code_bar_button(self):
 
         print('create code bar')
+        if self.form_validation():
+            brc.fill_html_templates(
+                self.main_frame.action_frame.product.get(),
+                '0000007',
+                self.main_frame.action_frame.product_quantity.get(),
+                self.main_frame.action_frame.product_disponible_quantity_label.cget('text').split(' ')[-1],
+                20,
+                self.main_frame.action_frame.extra_info.get('0.0', tk.END)
+            )
+            brc.gen_display_filled_template_snapshot()
+            self.main_frame.show_frame.invoice_image = ctk.CTkImage(Image.open(os.path.join('static/images', "display_filled_template.png")), size=(250, 500))
+            self.main_frame.show_frame.invoice_image_label.configure(
+                image=self.main_frame.show_frame.invoice_image)
 
-        brc.fill_html_templates(
-            self.main_frame.action_frame.product.get(),
-            '0000007',
-            self.main_frame.action_frame.product_quantity.get(),
-            self.main_frame.action_frame.product_disponible_quantity_label.cget('text').split(' ')[-1],
-            20,
-            self.main_frame.action_frame.extra_info.get('0.0', tk.END)
-        )
-        brc.gen_display_filled_template_snapshot()
-        self.main_frame.show_frame.invoice_image = ctk.CTkImage(Image.open(os.path.join('static/images', "display_filled_template.png")), size=(250, 500))
-        self.main_frame.show_frame.invoice_image_label.configure(
-            image=self.main_frame.show_frame.invoice_image)
-
+            self.reset_button()
         # gen_bar_code(sequence = '12345678910111')     
 
         # bar_code_img = ctk.CTkImage(Image.open(os.path.join('static/images', "bar_code.png")), size=(200, 150))
@@ -218,33 +218,51 @@ class MainController():
         # self.button_create_bar_code.grid_forget()
         # self.button_print.grid(row=2, column=1, columnspan=2, padx=15, pady=(10,10), sticky="w")
 
+    def form_validation(self):
 
+        if self.main_frame.action_frame.product.get() == 'NO PRODUCT':
+            self.main_frame.action_frame.form_validation_label.configure(text='Veuillez vous choisir le produit s\'il vous plait.', text_color='red')
+            self.main_frame.action_frame.form_validation_label.grid(row=5, column=0, sticky="w",  pady=(10,10))
+            return False
+
+        if not self.main_frame.action_frame.product_quantity.get():
+            self.main_frame.action_frame.form_validation_label.configure(text='Veuillez vous assurer tous les champs sont remplit.', text_color='red')
+            self.main_frame.action_frame.form_validation_label.grid(row=5, column=0, sticky="w",  pady=(10,10))
+            return False
+        
+        return True
 
     def reset_button(self):
+
         self.main_frame.action_frame.company.set(self.main_frame.action_frame.company.cget("values")[0])
         self.load_locations(self.main_frame)
         self.load_products(self.main_frame)
-
+        
         self.main_frame.action_frame.product_entry.delete(0,tk.END)
-        self.main_frame.action_frame.product_date.delete(0,tk.END)
-        self.main_frame.action_frame.product_entry.delete(0,tk.END)
-
+        self.main_frame.action_frame.product_entry.configure(placeholder_text= 'BOBINE GALVA - MV')
+        
         self.main_frame.action_frame.product_quantity.configure(state='normal')
         self.main_frame.action_frame.product_quantity.delete(0,tk.END)
+        self.main_frame.action_frame.product_quantity.configure(placeholder_text= 'Poids')
         self.main_frame.action_frame.product_quantity.configure(state='disabled')
 
         self.main_frame.action_frame.confirm_product_quantity.configure(state='normal')
         self.main_frame.action_frame.confirm_product_quantity.delete(0,tk.END)
+        self.main_frame.action_frame.confirm_product_quantity.configure(placeholder_text= 'Confirm Poids')
         self.main_frame.action_frame.confirm_product_quantity.configure(state='disabled')
-
+        
         self.main_frame.action_frame.product_date.configure(state='normal')
         self.main_frame.action_frame.product_date.delete(0,tk.END)
+        self.main_frame.action_frame.product_date.configure(placeholder_text= 'Date')
         self.main_frame.action_frame.product_date.configure(state='disabled')
-
+        
         self.main_frame.action_frame.product_time.configure(state='normal')
         self.main_frame.action_frame.product_time.delete(0,tk.END)
+        self.main_frame.action_frame.product_time.configure(placeholder_text= 'Time')
         self.main_frame.action_frame.product_time.configure(state='disabled')
         # self.confirm_product_quantity.configure(text='sfgsfg')
 
         self.main_frame.action_frame.extra_info.delete('1.0',tk.END)
+        self.main_frame.action_frame.form_validation_label.grid_forget()
+
 

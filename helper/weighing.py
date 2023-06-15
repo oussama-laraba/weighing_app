@@ -8,14 +8,12 @@ class WeighingConnection(serial.Serial):
         data_dict = {}
         try:
             record = self.readlines()
-            print('hello')
             if record:
-                
+                print("hello weighing")
                 data_dict['date']= record[0].decode('utf-8').split(' ')[-1].strip('\r\n')
                 data_dict['time'] = record[1].decode('utf-8').split(' ')[-1].strip('\r\n')
                 data_dict['gross']=  float(record[2].decode('utf-8').split(' ')[-1].strip('\r\n').split('kg')[0])
-                            
-                data.append(data_dict)
+
                 return  data_dict
                     
         except KeyboardInterrupt:

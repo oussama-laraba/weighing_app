@@ -65,9 +65,7 @@ class ActionFrame(ctk.CTkFrame):
 
         self.product_entry_label = ctk.CTkLabel(self.product_selection_frame, text="Chercher Produit")
         self.product_entry_label.grid(row=0, column=1, padx=(15,0), sticky="w")
-        self.product_entry = ctk.CTkEntry(
-                                        self.product_selection_frame, 
-                                        )
+        self.product_entry = ctk.CTkEntry(self.product_selection_frame, placeholder_text= 'BOBINE GALVA - MV')
         self.product_entry.grid(row=1, column=1, padx=(15,0), sticky="w")
 
 
@@ -78,41 +76,38 @@ class ActionFrame(ctk.CTkFrame):
         self.product_quantity_frame.grid_columnconfigure(2, weight=1)
 
         self.product_disponible_quantity_label = ctk.CTkLabel(self.product_quantity_frame, text="", font=('', 14))
-        self.product_disponible_quantity_label.grid(row=0, column=0, columnspan=3, sticky="w")
+        self.product_disponible_quantity_label.grid(row=0, column=0, columnspan=2, sticky="w")
+        
 
-        self.product_quantity_label = ctk.CTkLabel(self.product_quantity_frame, text="Quantite")
+        self.product_quantity_label = ctk.CTkLabel(self.product_quantity_frame, text="Poids")
         self.product_quantity_label.grid(row=1, column=0, sticky="w")
 
-        self.product_quantity = ctk.CTkEntry(self.product_quantity_frame, width=150)
+        self.product_quantity = ctk.CTkEntry(self.product_quantity_frame, placeholder_text= 'Poids', width=150)
         self.product_quantity.grid(row=2, column=0, sticky="w", pady=(0,10))
-        self.product_quantity.insert(0,'text')
         self.product_quantity.configure(state='disabled')
 
 
         self.product_date_label = ctk.CTkLabel(self.product_quantity_frame, text="Date")
         self.product_date_label.grid(row=1, column=1, padx=(5,5), sticky="w")
 
-        self.product_date = ctk.CTkEntry(self.product_quantity_frame, width=150)
+        self.product_date = ctk.CTkEntry(self.product_quantity_frame, placeholder_text= 'Date', width=150)
         self.product_date.grid(row=2, column=1, sticky="w", padx=(5,5),  pady=(0,10))
-        self.product_date.insert(0,'2023-05-03')
         self.product_date.configure(state='disabled')
 
         self.product_time_label = ctk.CTkLabel(self.product_quantity_frame, text="Time")
         self.product_time_label.grid(row=1, column=2, sticky="w")
 
-        self.product_time = ctk.CTkEntry(self.product_quantity_frame, width=150)
+        self.product_time = ctk.CTkEntry(self.product_quantity_frame, placeholder_text= 'Time', width=150)
         self.product_time.grid(row=2, column=2, sticky="w", pady=(0,10))
-        self.product_time.insert(0,'14:55')
         self.product_time.configure(state='disabled')
 
-        self.confirm_product_quantity_label = ctk.CTkLabel(self.product_quantity_frame, text="Confirme quantite")
+        self.confirm_product_quantity_label = ctk.CTkLabel(self.product_quantity_frame, text="Confirmer Poids")
         self.confirm_product_quantity_label.grid(row=3, column=0, sticky="w")
 
         self.confirm_product_quantity = ctk.CTkEntry(self.product_quantity_frame,
-                                                placeholder_text= 'Produit Quantité',
+                                                placeholder_text= 'Confirmer Poids',
                                                 width=150)
         self.confirm_product_quantity.grid(row=4, column=0, sticky="w")
-        self.confirm_product_quantity.insert(0,'text')
         self.confirm_product_quantity.configure(state='disabled')
 
 
@@ -125,13 +120,15 @@ class ActionFrame(ctk.CTkFrame):
         self.extra_info_label.grid(row=0, column=0, sticky="w")
 
         self.extra_info = ctk.CTkTextbox(self.extra_info_frame,
-                                                width=450, height=200)
+                                                width=450, height=150)
         self.extra_info.grid(row=1, column=0, sticky="w",  pady=(0,10))
+        
 
-        self.button_create_bar_code= ctk.CTkButton(self.extra_info_frame, text="Confirm and create code à bar",
+        self.button_create_bar_code= ctk.CTkButton(master=self.extra_info_frame, text="Confirm and create code à bar",
                                                 width=450)
-        self.button_create_bar_code.grid(row=5, column=0, sticky="w",  pady=(10,10))
+        self.button_create_bar_code.grid(row=2, column=0, sticky="w",  pady=(10,10))
 
+        self.form_validation_label = ctk.CTkLabel(self.extra_info_frame, text='problem', font=('', 14),width=450)
 
 
 

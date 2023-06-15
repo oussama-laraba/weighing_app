@@ -262,6 +262,15 @@ class App2(customtkinter.CTk):
 if __name__ == "__main__":
 
     app = App2()
+    
+
+    def close_app():
+        if app.main_controller:
+            app.main_controller.close_thread()
+        app.destroy()
+
+    app.protocol('WM_DELETE_WINDOW', close_app)
+
     app.mainloop()
     #app.main_controller.close_thread()
 
