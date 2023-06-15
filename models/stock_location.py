@@ -13,7 +13,6 @@ class StockLocationModel():
         return stock_location
     
     def select_query(self, columns='*', conditions= None):
-        print("perform query select")
         cursor = self.db.cursor()
         query= 'SELECT'
         for column in columns:
@@ -27,7 +26,6 @@ class StockLocationModel():
             query= query[:-3]
         query+=';'
 
-        print(query)
         data = cursor.execute(query).fetchall()
         cursor.close()
         return data
@@ -42,10 +40,6 @@ class StockLocationModel():
         cursor.close()
         return id
 
-    def update_query(self, data):
-        
-        print('update query')
-
     def delete_query(self, ids):
         cursor = self.db.cursor()
         delete_query = 'DELETE FROM STOCK_LOCATION\
@@ -54,4 +48,3 @@ class StockLocationModel():
         cursor.execute(delete_query)
         self.db.commit()
         cursor.close()
-        print('perform delete')

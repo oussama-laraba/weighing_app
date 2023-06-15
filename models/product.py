@@ -30,7 +30,6 @@ class  ProductModel():
 
 
     def select_query(self, columns='*', conditions= None):
-        print("perform query select")
         cursor = self.db.cursor()
         query= 'SELECT'
         for column in columns:
@@ -44,7 +43,6 @@ class  ProductModel():
             query= query[:-3]
         query+=';'
 
-        print(query)
         data = cursor.execute(query).fetchall()
         cursor.close()
         return data
@@ -54,16 +52,11 @@ class  ProductModel():
         cursor = self.db.cursor()
         create_query = 'INSERT INTO PRODUCT (ODOO_ID, NAME)\
                                 VALUES ("{}","{}");'.format(data['ODOO_ID'], data['NAME'])
-        print(create_query)
         id = cursor.execute(create_query).lastrowid
-        print("hello")
         self.db.commit()
         cursor.close()
         return id
-
-    def update_query(self, data):
-        
-        print('update query')
+    
 
     def delete_not_in_query(self, ids):
         cursor = self.db.cursor()
@@ -73,7 +66,6 @@ class  ProductModel():
         cursor.execute(delete_query)
         self.db.commit()
         cursor.close()
-        print('perform delete')
 
     def delete_all_query(self):
         cursor = self.db.cursor()
@@ -82,7 +74,6 @@ class  ProductModel():
         cursor.execute(delete_query)
         self.db.commit()
         cursor.close()
-        print('perform delete')
 
 
 
@@ -96,7 +87,6 @@ class ProductLocationModel():
 
     def create_query(self, data):
         cursor = self.db.cursor()
-        print(data)
         create_query = 'INSERT INTO PRODUCT_LOCATION (STOCK_LOCATION_ID, PRODUCT_ID)\
                                 VALUES ({},"{}")'.format(data['STOCK_LOCATION_ID'], data['PRODUCT_ID'])
         id = cursor.execute(create_query).lastrowid

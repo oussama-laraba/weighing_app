@@ -17,7 +17,6 @@ class DbConnection():
             sqlite_select_Query = "select sqlite_version();"
             cursor.execute(sqlite_select_Query)
             record = cursor.fetchall()
-            print("SQLite Database Version is: ", record)
             return sqliteConnection
 
         except sqlite3.Error as   error:

@@ -12,7 +12,7 @@ from models.database_connection import DbConnection
 # user = 'admin@dzexpert.com'
 # key = '9691c22a00c554bb26586520ef7f19669583e2d9'
 #'36984191bd820a2c86bfda3284a2beb3a40d7a26'
-database = DbConnection().db
+# database = DbConnection().db
 
 
 class ApiConnection():
@@ -22,28 +22,26 @@ class ApiConnection():
         self.api_connection = self.connect_api()
 
     def connect_api(self):
-
+        
         cursor = self.db.cursor()
         cursor.execute('SELECT S.*, U.EMAIL, U.PASSWORD FROM SERVER AS S, USER AS U\
                         WHERE U.URL_ID = S.ID')
         possible_connection = cursor.fetchall()
-        print(possible_connection)
+        cursor.close()
         for connection in possible_connection:
+            print('api connection')
             url  = connection[1]+':'+str(connection[2])
             db =  connection[3]
             #key = connection[4]
             key= connection[-1]
             user = connection[5]
-            print('\n\n\n\n')
-            print(len(key))
-            print(url+' '+db+' '+user+' '+key)
-            print('\n\n\n\n')
             try:
                 con = OdooStockapi(url, db, user, key)
                 return con    
             except OSError : 
                 print("odoo server connection problem")
-        cursor.close()
+        print('cannot connect')
+        
         return None
 
 
@@ -100,7 +98,23 @@ class ApiConnection():
 
         return None
 
+def main_product_stock(con, location_id = None):
 
+        try:
+            products = con.get_stock_locations(fields = ['location_id','product_id','quantity', 'product_uom_id'])
+            filtered_products = list()
+            for product in list(products):
+                if product['location_id'][0] == location_id :
+                    del product['id']
+                    del product['location_id']
+                    filtered_products.append(product)
+
+            return filtered_products
+
+        except:
+            print('Access Denied')
+
+        return None
 
 
 def get_stockable_product(con, fields = [] ):
@@ -129,15 +143,26 @@ def get_stockable_product(con, fields = [] ):
 
     return None
 
-url  = 'http://demo.dzexpert.com'+':8069'
-db =  'ODOO11_TEST'
+# url  = 'http://demo.dzexpert.com'+':8069'
+# db =  'ODOO11_TEST'
+
+
+# url = 'http://192.168.1.98'+':8069'
+# db =  'bilbao_test_2'
 #key = connection[4]
-key= '123456'
-user = 'admin@dzexpert.com'
-print('\n\n\n\n')
-print(len(key))
-print(url+' '+db+' '+user+' '+key)
-print('\n\n\n\n')
+# key= '123456'
+# user = 'admin@dzexpert.com'
+# print('\n\n\n\n')
+# print(len(key))
+# print(url+' '+db+' '+user+' '+key)
+# print('\n\n\n\n')
 
 # con = OdooStockapi(url, db, user, key)
-# print(get_stockable_product(con))
+# # print(get_stockable_product(con))
+# # print(con.get_stock_locations(location_id=126))
+
+# print('\n\n\n\n')
+# print(main_product_stock(con,12))
+
+# #print(con.get_internal_locations_ids())
+# main_product_stock(con,12)

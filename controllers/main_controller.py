@@ -20,7 +20,7 @@ class MainController():
     def __init__(self, view_master= None, db= None, api_connection=None,  db_name= None):
 
         self.db_name= db_name
-        self.model= MainModel()
+        #self.model= MainModel()
         self.db = db
         self.api_connection = api_connection
         self.view_master= view_master
@@ -31,6 +31,7 @@ class MainController():
         self.product_id_values_quantity = []
         self.main_frame = self.get_view()
         self.thread = True
+        print("data\n\n\n")
     
     
         
@@ -127,11 +128,12 @@ class MainController():
         #                             AND  SL.LOCATION = "{}";'.format(self.location.get())).fetchall()
         
         products = self.api_connection.main_product_stock(self.location_values_id[main_view.action_frame.location.get()])
+        
         if products:
 
             self.product_id_values_quantity = [[ product['product_id'][0], product['product_id'][1],\
                                             product['quantity'], product['product_uom_id'][1] ] for product in products]
-            
+            #print(self.product_id_values_quantity)
             product_values = [product[1] for product in self.product_id_values_quantity]
             main_view.action_frame.product.configure(values=product_values)
             main_view.action_frame.product.set(self.product_id_values_quantity[0][1])

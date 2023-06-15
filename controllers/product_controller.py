@@ -35,8 +35,8 @@ class ProductController():
                 db_ids_dict[str(id[0])]= 1
             #db_ids = list(map(lambda x: db_ids_dict[str(x[0])]= 1, db_ids))
             
-            print(db_ids)
-            #self.product_location_model.delete_all()
+            #print(db_ids)
+            self.product_location_model.delete_all()
             # string have all product in coming from odoo api
             product_ids = ''
 
@@ -55,18 +55,17 @@ class ProductController():
                             self.product_location_model.create_query(data)
                             print('add product')
                 else:
-
                     db_product_location_copy = self.model.get_product_locations(rec['id'])
                     db_product_location = list()
                     for location in db_product_location_copy:
                         db_product_location.append(location[0])
                     del db_product_location_copy
                     
-                    if rec.get('location_id'):    
+                    if rec.get('location_id'): 
                         api_product_location = rec.get('location_id')
                         to_remove_location = list(set(db_product_location)- set(api_product_location))
                         to_add_location = list(set(api_product_location)- set(db_product_location))
-
+                        print(db_product_location)
                         for rm_location in to_remove_location:
                             print('remove location from product')
                             self.product_location_model.delete(rec.get('id'), rm_location)
@@ -90,7 +89,6 @@ class ProductController():
 
         
     def location_callback(self, location):
-        print(location)
         self.initialize_view(self.product_frame)
         pass
 

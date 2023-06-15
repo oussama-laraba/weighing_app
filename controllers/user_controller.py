@@ -21,19 +21,13 @@ class UserController():
         
 
     def show_create_edit_window(self, element= None):
-        print('show')
         if element:
-            print(element)
-            print('update')
             CreateUpdateUser(server_model= self.server_model, user=element, button= self.edit, validation_function= self.form_validation)
         else:
-            print('create')
             CreateUpdateUser(server_model= self.server_model, button= self.create, validation_function= self.form_validation)
 
     
     def create(self, data):
-        print("create button clicked")
-        print(data)
         id = self.model.create_query(data)
         keys = list(data.keys())
         for key in keys:
@@ -41,14 +35,12 @@ class UserController():
             data.pop(key)
 
         data['id'] = id
-        print(data)
         color, bg_color = ('green','#e0e0e0') if len(self.user_frame.user_list.frame_list)%2 == 1 else ('blue violet','#C0C0C0')
 
         self.user_frame.user_list.create_elements(data, color, bg_color)
         
 
     def edit(self, data):
-        print('editing')
         self.model.update_query(data)
         
 
@@ -75,14 +67,11 @@ class UserController():
         return None
 
     def delete(self, element):
-        print('deleting')
         DeleteConfirmation(element, self.delete_confirmation)
         element.destroy()
         
 
     def delete_confirmation(self, element):
-        print("delete confirmation")
-        print(element.id)
         self.model.delete_query(element.id)
         self.user_frame.user_list.frame_list = list(filter(lambda x: x.id != element.id, self.user_frame.user_list.frame_list))
         element.destroy()

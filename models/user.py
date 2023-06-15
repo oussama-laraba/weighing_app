@@ -29,7 +29,6 @@ class UserModel():
             query= query[:-3]
         query+=';'
 
-        print(query)
         data = cursor.execute(query).fetchall()
         cursor.close()
         return data
@@ -63,11 +62,9 @@ class UserModel():
                         ))
         cursor.close()
         self.db.commit()
-        print('update query')
 
     def delete_query(self, id):
         cursor = self.db.cursor()
         cursor.execute(f'DELETE FROM USER WHERE ID = {id};')
         cursor.close()
         self.db.commit()
-        print('perform delete')

@@ -20,8 +20,6 @@ class StockLocationController():
         
 
     def create(self, data):
-        print("create button clicked")
-        print(data)
         id = self.model.create_query(data)
         keys = list(data.keys())
         for key in keys:
@@ -29,7 +27,6 @@ class StockLocationController():
             data.pop(key)
 
         data['id'] = id
-        print(data)
         color, bg_color = ('green','#e0e0e0') if len(self.user_frame.user_list.frame_list)%2 == 1 else ('blue violet','#C0C0C0')
 
         self.stock_location_frame.stock_location_list.create_elements(data, color, bg_color)
@@ -43,11 +40,8 @@ class StockLocationController():
         
     
     def refresh(self):
-        print('click refresh')
-        
         # get stock location from odoo api
         stock_location = self.api_connection.get_locations(['id','location_id' , 'company_id', 'display_name'])
-        print(stock_location)
         # get all stock location ids from sqlite database
         db_ids= self.model.select_query(columns=['ODOO_ID'])
 

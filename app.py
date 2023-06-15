@@ -121,63 +121,80 @@ class App2(customtkinter.CTk):
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(1, weight=1)
 
-        db = DbConnection().db
-        api_connection = ApiConnection(db=db)
+        self.db = DbConnection().db
+        self.api_connection = ApiConnection(db=self.db)
 
         # self.main_frame= MainFrame(master=self, fg_color='#D2D7D3')
         # self.main_frame.grid(row=1, column=1, sticky="nsew")
         
         
         
-        self.server_frame = SeverController(view_master=self, db=db).server_frame
-        #self.server_frame.grid(row=1, column=1, sticky="nsew")
+        self.server_frame = None
 
-        self.lot_frame = LotFrame(master=self, db=db, fg_color='white')
+        
 
         #self.user_frame = UserFrame(master=self, fg_color='white')
-        self.user_frame = UserController(view_master=self, db=db).user_frame
+        self.user_frame = None
+
+        self.lot_frame = None
 
 
         #self.stock_location_frame = StockLocationFrame(master=self, fg_color='white')
-        self.stock_location_frame = StockLocationController(view_master = self, db=db, api_connection=api_connection).stock_location_frame
+        self.stock_location_frame = None
 
         #self.stockable_product_frame = ProductFrame(master=self, fg_color='white')
-        self.stockable_product_frame = ProductController(view_master=self, db=db, api_connection=api_connection).product_frame
+        self.stockable_product_frame = None
         
-        self.main_controller = MainController(view_master=self, db=db, api_connection=api_connection)
+        self.main_controller = MainController(view_master=self, db=self.db, api_connection=self.api_connection)
         self.main_frame = self.main_controller.main_frame
         self.main_frame.grid(row=1, column=1, sticky="nsew")
         self.main_controller.open_thread()
 
         # create scrollable label and button frame
     def close_main_frame(self):
-        self.main_frame.grid_forget()
-        self.main_controller.close_thread()
-        self.main_controller.reset_button()
-        self.lot_frame.grid_forget()
+        
+        if self.main_frame:
+            if self.main_controller:
+                self.main_controller.close_thread()
+                self.main_controller.reset_button()
+                self.main_controller = None
+            self.main_frame.destroy()
+            
+        if self.lot_frame:
+            self.lot_frame.destroy()
 
     def select_main_frame(self,name):
         self.close_config_frames()
         self.close_product_frames()
         self.close_stock_frames()
 
-        if name == "main":
+        if name == "main": 
+            self.main_controller = MainController(view_master=self, db=self.db, api_connection=self.api_connection)
+            self.main_frame = self.main_controller.main_frame
             self.main_frame.grid(row=1, column=1, sticky="nsew")
             self.main_controller.open_thread()
         else:
-            self.main_frame.grid_forget()
-            self.main_controller.close_thread()
-            self.main_controller.reset_button()
+            if self.main_frame:
+                if self.main_controller:
+                    self.main_controller.close_thread()
+                    self.main_controller.reset_button()
+                    self.main_controller = None
+                self.main_frame.destroy()
 
         if name == "lot":
+            self.lot_frame = LotFrame(master=self, db=self.db, fg_color='white')
             self.lot_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
-            self.lot_frame.grid_forget()
+            if self.lot_frame:
+                self.lot_frame.destroy()
     
 
     def close_config_frames(self):
-        self.server_frame.grid_forget()
-        self.user_frame.grid_forget()
+        if self.server_frame:
+            self.server_frame.destroy()
+        
+        if self.user_frame:
+            self.user_frame.destroy()
 
     def select_config_frame_by_name(self, name):
         
@@ -187,19 +204,24 @@ class App2(customtkinter.CTk):
 
         # show selected frame
         if name == "servers":
+            self.server_frame = SeverController(view_master=self, db=self.db).server_frame
             self.server_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
-            self.server_frame.grid_forget()
+            if self.server_frame:
+                self.server_frame.destroy()
 
         if name == "users":
+            self.user_frame = UserController(view_master=self, db=self.db).user_frame
             self.user_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
-            self.user_frame.grid_forget()
+            if self.user_frame:
+                self.user_frame.destroy()
 
 
 
     def close_stock_frames(self):
-        self.stock_location_frame.grid_forget()
+        if self.stock_location_frame:
+            self.stock_location_frame.destroy()
 
     def select_stock_frame_by_name(self, name):
         
@@ -210,14 +232,17 @@ class App2(customtkinter.CTk):
 
         # show selected frame
         if name == "location":
+            self.stock_location_frame = StockLocationController(view_master = self, db=self.db, api_connection=self.api_connection).stock_location_frame
             self.stock_location_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
-            self.stock_location_frame.grid_forget()
+            if self.stock_location_frame:
+                self.stock_location_frame.destroy()
 
 
 
     def close_product_frames(self):
-        self.stockable_product_frame.grid_forget()
+        if self.stockable_product_frame:
+            self.stockable_product_frame.destroy()
 
     def select_product_frame_by_name(self, name):
         
@@ -227,19 +252,18 @@ class App2(customtkinter.CTk):
         
         # show selected frame
         if name == "stockable_product":
+            self.stockable_product_frame = ProductController(view_master=self, db=self.db, api_connection=self.api_connection).product_frame
             self.stockable_product_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
-            self.stockable_product_frame.grid_forget()
+            if self.stockable_product_frame:
+                self.stockable_product_frame.destroy()
 
 
 if __name__ == "__main__":
-    
-    
-    
 
     app = App2()
     app.mainloop()
-    app.main_controller.close_thread()
+    #app.main_controller.close_thread()
 
 
 

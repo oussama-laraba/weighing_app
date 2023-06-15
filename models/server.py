@@ -5,7 +5,6 @@ class ServerModel():
         self.db = db
 
     def select_query(self, columns='*', conditions= None):
-        print("perform query select")
         cursor = self.db.cursor()
         query= 'SELECT'
         for column in columns:
@@ -19,7 +18,6 @@ class ServerModel():
             query= query[:-3]
         query+=';'
 
-        print(query)
         data = cursor.execute(query).fetchall()
         cursor.close()
         return data
@@ -54,13 +52,11 @@ class ServerModel():
                         ))
         cursor.close()
         self.db.commit()
-        print('update query')
 
     def delete_query(self, id):
         cursor = self.db.cursor()
         cursor.execute(f'DELETE FROM SERVER WHERE ID = {id};')
         cursor.close()
         self.db.commit()
-        print('perform delete')
 
     

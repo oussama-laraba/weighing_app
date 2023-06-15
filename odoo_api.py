@@ -1,8 +1,5 @@
 import xmlrpc.client
-import sys
-import pandas as pd
-sys.path.append('../code_git11')
-
+import re
 class OdooConnection:
     
     def __init__(self, url, db, user, key):
@@ -26,7 +23,6 @@ class OdooConnection:
         self.key = key
         
         self.common = xmlrpc.client.ServerProxy(f'{self.url}/xmlrpc/2/common')
-        self.version = int(self.common.version()['server_version'][:2])
         self.uid = self.common.authenticate(self.db, self.user, self.key , {})
 
         self.models = xmlrpc.client.ServerProxy(f'{self.url}/xmlrpc/2/object')
@@ -73,7 +69,7 @@ class OdooConnection:
             else :
                 return False
         except xmlrpc.client.Fault as fault:
-            print(fault.faultString)
+            (fault.faultString)
             return None
 
     def check_access_right (self, model, access_right = 'read'):
@@ -84,7 +80,7 @@ class OdooConnection:
             access_right (_str_): Defaults to 'read'.
             access_right = 'read' || 'create' || 'write' || 'unlink' 
         Returns:
-            _type_: _Boolean_
+            _type_: _description_
         """
         return self.call_method(model,'check_access_rights',[access_right] ,{'raise_exception': False})
         
@@ -135,6 +131,8 @@ class OdooConnection:
         else:
             return False
 
+    # def get_attrs(self, model, ids, ):
+    #     pass
 
     def create(self, model, vals):
         """_summary_
@@ -183,12 +181,13 @@ class OdooConnection:
         return self.unlink(model,ids)
 
 
-class OdooStockapi(OdooConnection):
 
-    def get_stockable_products_ids(self):  
-        query = ['type','=','product']
-        if self.version >=15: 
-            query = ['detailed_type','=','product']
+class OdooStockapi(OdooConnection):
+    
+
+
+    def get_stockable_products_ids(self ,query = ['detailed_type','=','product'] ):  
+            
         model = 'product.product'
         stockable_products_ids = self.get_ids(model,query)# only stockable products
         return stockable_products_ids
@@ -203,30 +202,7 @@ class OdooStockapi(OdooConnection):
             stockable_products = self.get_records(model,stockable_products_ids ,fields )
         return stockable_products
 
-    # def get_stock_locations(self ,fields = ['id','location_id','product_id','quantity','product_uom_id','company_id','lot_id'] , location_id = None,offset = 0, limit = 0):
-    #     fields = fields
-    #     model = ''
-    #     internal_stock_ids = []
-    #     internal_location_ids = []
-    #     stock_location = []
-    #     internal_location_ids = self.get_internal_locations_ids()
-    #     # print(internal_location_ids)
-    #     if location_id == None:
-    #         query = ['location_id','in',internal_location_ids]
-    #     elif location_id in internal_location_ids:
-    #         query = ['location_id','in',[location_id]] ### make sure its internal location
-    #         # print(query)
-    #     else:
-    #         return []
-    #     if internal_location_ids:
-    #         model = 'stock.quant'
-    #         internal_stock_ids =  self.get_ids(model,query,offset,limit)
-    #         stock_location = self.get_records(model,internal_stock_ids ,fields)
-    #         # print(stock_location)
-    #     return stock_location 
-    
-
-    def get_stock_locations(self ,fields = ['id','location_id','product_id','quantity','product_uom_id','company_id','lot_id'] , offset = 0, limit = 0):
+    def get_stock_locations(self ,fields = ['id','location_id','product_id','quantity','product_uom_id','company_id'] , offset = 0, limit = 0):
         fields = fields
         model = ''
         internal_location_ids = self.get_internal_locations_ids()
@@ -235,9 +211,12 @@ class OdooStockapi(OdooConnection):
         if internal_location_ids:
             model = 'stock.quant'
             internal_stock_ids =  self.get_ids(model,['location_id','in',internal_location_ids],offset,limit)
-            # print(fields)
             stock_location = self.get_records(model,internal_stock_ids ,fields)
         return stock_location 
+    
+
+    
+
 
     def get_internal_locations_ids(self ):
         model = 'stock.location'
@@ -269,45 +248,4 @@ class OdooStockapi(OdooConnection):
         if lot_ids:
             lot_ids_recs = self.get_records(model,lot_ids ,fields)
         return lot_ids_recs
-    
-    def get_lot_df(self ):
-        fields = ['id','lot_id','product_id' ,'quantity','product_uom_id','location_id','company_id',]
-        stock_location = self.get_stock_locations(fields =  fields)
-        cols = list(stock_location[0].keys())[1:]
-        cols.append('lot_name')
-    
-        lot_data = []
-        for stock in stock_location :
-            if stock['lot_id']:    
-                
-                stock ['lot_name'] = ''
-                
-                if stock ['location_id']:
-                    stock ['location_id'] = stock ['location_id'][0]
-                
-                if ['product_uom_id']:
-                    stock ['product_uom_id'] = stock ['product_uom_id'][0]
-            
-                if stock ['product_id']:
-                    stock ['product_id'] = stock ['product_id'][0]
-                
-                if stock ['company_id']:
-                    stock ['company_id'] = stock ['company_id'][0]
-                
-                if stock ['lot_id'] :
-                    # print("\n\n",stock ['lot_id'],"\n\n\n______________________")
-                    
-                    if self.version == 11:    
-                        lot_name = stock['lot_id'][1].split(' ')[0]
-                    elif self.version >= 15:
-                        lot_name = stock['lot_id'][1]   
-                    lot_id = stock['lot_id'][0]
-                    stock ['lot_id'] = lot_id
-                    stock ['lot_name'] = lot_name
-                # print("\n\n",stock,"\n\n\n______________________")
-                lot_data.append(list(stock.values())[1:])
-        
-        lot_df = pd.DataFrame(data = lot_data, columns= cols)
-        lot_df = lot_df.reindex(columns = ['lot_id','lot_name','product_id','quantity','product_uom_id','company_id','location_id',])
-        
-        return lot_df
+
