@@ -201,11 +201,11 @@ class MainController():
                 self.main_frame.action_frame.extra_info.get('0.0', tk.END)
             )
             brc.gen_display_filled_template_snapshot()
-            self.main_frame.show_frame.invoice_image = ctk.CTkImage(Image.open(os.path.join('static/images', "display_filled_template.png")), size=(250, 500))
-            self.main_frame.show_frame.invoice_image_label.configure(
-                image=self.main_frame.show_frame.invoice_image)
-
             self.reset_button()
+            invoice_image = ctk.CTkImage(Image.open(os.path.join('static/images', "display_filled_template.png")), size=(250, 500))
+            self.main_frame.show_frame.invoice_image_label = ctk.CTkLabel(self.main_frame.show_frame, text="", image=invoice_image)
+            self.main_frame.show_frame.invoice_image_label.grid(row=1, column=1, columnspan=2, padx=15, pady=(10, 10), sticky="nswe")
+            
         # gen_bar_code(sequence = '12345678910111')     
 
         # bar_code_img = ctk.CTkImage(Image.open(os.path.join('static/images', "bar_code.png")), size=(200, 150))
@@ -265,4 +265,6 @@ class MainController():
         self.main_frame.action_frame.extra_info.delete('1.0',tk.END)
         self.main_frame.action_frame.form_validation_label.grid_forget()
 
+        if self.main_frame.show_frame.invoice_image_label:
+            self.main_frame.show_frame.invoice_image_label.grid_forget()
 

@@ -22,7 +22,7 @@ class ApiConnection():
         self.api_connection = self.connect_api()
 
     def connect_api(self):
-        
+        print('api connection')
         cursor = self.db.cursor()
         cursor.execute('SELECT S.*, U.EMAIL, U.PASSWORD FROM SERVER AS S, USER AS U\
                         WHERE U.URL_ID = S.ID')
@@ -46,6 +46,7 @@ class ApiConnection():
 
 
     def get_locations(self, fields = []):
+        print('api call get_locations')
         try:
             return self.api_connection.get_internal_locations_records(fields)
         except:
@@ -55,6 +56,7 @@ class ApiConnection():
 
     def get_stockable_product(self, fields = [] ):
 
+        print('api call get_stockable_product')
         try: 
             stockable_products = self.api_connection.get_stockable_products_records(fields=['id','name'])
             product_location = self.api_connection.get_stock_locations(fields = ['id','location_id','product_id','quantity','product_uom_id','company_id'])
@@ -82,6 +84,7 @@ class ApiConnection():
 
     def main_product_stock(self, location_id = None):
 
+        print('api call main_product_stock')
         try:
             products = self.api_connection.get_stock_locations(fields = ['location_id','product_id','quantity', 'product_uom_id'])
             filtered_products = list()
@@ -98,50 +101,50 @@ class ApiConnection():
 
         return None
 
-def main_product_stock(con, location_id = None):
+# def main_product_stock(con, location_id = None):
 
-        try:
-            products = con.get_stock_locations(fields = ['location_id','product_id','quantity', 'product_uom_id'])
-            filtered_products = list()
-            for product in list(products):
-                if product['location_id'][0] == location_id :
-                    del product['id']
-                    del product['location_id']
-                    filtered_products.append(product)
+#         try:
+#             products = con.get_stock_locations(fields = ['location_id','product_id','quantity', 'product_uom_id'])
+#             filtered_products = list()
+#             for product in list(products):
+#                 if product['location_id'][0] == location_id :
+#                     del product['id']
+#                     del product['location_id']
+#                     filtered_products.append(product)
 
-            return filtered_products
+#             return filtered_products
 
-        except:
-            print('Access Denied')
+#         except:
+#             print('Access Denied')
 
-        return None
-
-
-def get_stockable_product(con, fields = [] ):
-
-    try: 
-        stockable_products = con.get_stockable_products_records(fields=['id','name'])
-        product_location = con.get_stock_locations(fields = ['id','location_id','product_id','quantity','product_uom_id','company_id'])
-        product_loc = {}
-        for loc in product_location:
-
-            if product_loc.get(loc['product_id'][0]):
-                product_loc[loc['product_id'][0]].append(loc['location_id'][0])
-            else:
-                product_loc[loc['product_id'][0]] =  [loc['location_id'][0]]
+#         return None
 
 
-        product_dict = {}
-        product_list = []
-        for product in stockable_products:
-            product_dict.update({str(product['id']): product['name']})
-            product_list.append({'id': product['id'], 'name': product['name'], 'location_id': product_loc.get(product['id'])})
+# def get_stockable_product(con, fields = [] ):
 
-        return product_list
-    except: 
-        print('Access Denied')
+#     try: 
+#         stockable_products = con.get_stockable_products_records(fields=['id','name'])
+#         product_location = con.get_stock_locations(fields = ['id','location_id','product_id','quantity','product_uom_id','company_id'])
+#         product_loc = {}
+#         for loc in product_location:
 
-    return None
+#             if product_loc.get(loc['product_id'][0]):
+#                 product_loc[loc['product_id'][0]].append(loc['location_id'][0])
+#             else:
+#                 product_loc[loc['product_id'][0]] =  [loc['location_id'][0]]
+
+
+#         product_dict = {}
+#         product_list = []
+#         for product in stockable_products:
+#             product_dict.update({str(product['id']): product['name']})
+#             product_list.append({'id': product['id'], 'name': product['name'], 'location_id': product_loc.get(product['id'])})
+
+#         return product_list
+#     except: 
+#         print('Access Denied')
+
+#     return None
 
 # url  = 'http://demo.dzexpert.com'+':8069'
 # db =  'ODOO11_TEST'

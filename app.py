@@ -156,10 +156,9 @@ class App2(customtkinter.CTk):
         if self.main_frame:
             if self.main_controller:
                 self.main_controller.close_thread()
-                self.main_controller.reset_button()
                 self.main_controller = None
             self.main_frame.destroy()
-            
+        print('close main frame')
         if self.lot_frame:
             self.lot_frame.destroy()
 
@@ -177,7 +176,6 @@ class App2(customtkinter.CTk):
             if self.main_frame:
                 if self.main_controller:
                     self.main_controller.close_thread()
-                    self.main_controller.reset_button()
                     self.main_controller = None
                 self.main_frame.destroy()
 
