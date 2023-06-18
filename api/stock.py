@@ -83,7 +83,6 @@ class ApiConnection():
 
 
     def main_product_stock(self, location_id = None):
-
         print('api call main_product_stock')
         try:
             products = self.api_connection.get_stock_locations(fields = ['location_id','product_id','quantity', 'product_uom_id'])
@@ -100,6 +99,18 @@ class ApiConnection():
             print('Access Denied')
 
         return None
+
+
+
+def check_connection(data):
+    try:
+        con = OdooStockapi(data.get('url'), data.get('db'), data.get('user'), data.get('key'))
+        return con.state()
+    
+    except:
+        return None
+    
+
 
 # def main_product_stock(con, location_id = None):
 

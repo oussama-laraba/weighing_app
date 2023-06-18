@@ -33,7 +33,7 @@ class UserView(ctk.CTkFrame):
 
 class CreateUpdateUser(ctk.CTk):
 
-    def __init__(self, server_model=None,  user=None, button= None, validation_function= None):
+    def __init__(self, server_model=None,  user=None, button= None, create_edit_function= None):
         super().__init__()
 
         self.title("User")
@@ -78,7 +78,7 @@ class CreateUpdateUser(ctk.CTk):
         self.company=ctk.CTkEntry(master=self, width=220, placeholder_text='Entreprise')
         self.company.grid(row=4, column=0,  padx=15, pady=5, sticky="ns")
 
-        print(user)
+
 
         if self.user:
             self.id = self.user.id
@@ -91,36 +91,14 @@ class CreateUpdateUser(ctk.CTk):
         self.validation_text =ctk.CTkLabel(master=self, text='', font=('Century Gothic bold',15), text_color='red')
         
 
-        self.button1 = ctk.CTkButton(master=self, width=220, text="Save", command= lambda: self.button_function(validation_function), corner_radius=6)
+        self.button1 = ctk.CTkButton(master=self, width=220, text="Save", command= lambda: self.button_function(create_edit_function), corner_radius=6)
         self.button1.grid(row=6, column=0,  padx=15, pady=30, sticky="ns")
 
 
-    def button_function(self, validation_function):
-        validation_text = validation_function(self)
-        if not validation_function(self):
-            print('valid')
-            data = {}
-            
-            data['ID'] = self.user.id if self.user else None
-            data['EMAIL'] = self.email.get().strip()
-            data['PASSWORD'] = self.password.get().strip()
-            data['URL_ID'] = int(self.url_id)
-            data['COMPANY'] = self.company.get().strip()
-            self.button(data)
+    def button_function(self, create_edit_function):
 
-            if self.user:
-                self.user.data_dict.get('email').configure(text = self.email.get())
-                self.user.data_dict.get('password').configure(text = ''.join('*' for _ in range(len(self.password.get()))))
-                self.user.data_dict.get('url_id').configure(text = self.url_names.get())
-                self.user.data_dict.get('company').configure(text = self.company.get())
-
-            self.destroy()
-        else: 
-            self.button1.grid_forget()
-            self.validation_text.configure(text = validation_text)
-            self.validation_text.grid(row=6, column=0,  padx=15, pady=10, sticky="ns")
-            self.button1.grid(row=7, column=0,  padx=15, pady=10, sticky="ns")
-    
+        create_edit_function(self)
+        
 
     def change_url(self,name):
         id = list(filter(lambda x: x[1] == name,self.url_id_names))[0][0]

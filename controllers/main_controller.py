@@ -27,7 +27,7 @@ class MainController():
         self.stock_location_model = StockLocationModel(db=db)
         self.product_location_model = ProductLocationModel(db=db)
         self.company_values = []
-        self.location_values_id = {}
+        self.location_values_id = {'NO EMPLACEMENTS':0,}
         self.product_id_values_quantity = []
         self.main_frame = self.get_view()
         self.thread = True
@@ -125,24 +125,24 @@ class MainController():
         #                             INNER JOIN PRODUCT_LOCATION AS PL ON P.ID = PL.PRODUCT_ID\
         #                             INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID\
         #                             AND  SL.LOCATION = "{}";'.format(self.location.get())).fetchall()
-        
-        products = self.api_connection.main_product_stock(self.location_values_id[main_view.action_frame.location.get()])
-        
-        if products:
+        if main_view.action_frame.location.get() != 'NO EMPLACEMENTS':
+            products = self.api_connection.main_product_stock(self.location_values_id[main_view.action_frame.location.get()])
+            
+            if products:
 
-            self.product_id_values_quantity = [[ product['product_id'][0], product['product_id'][1],\
-                                            product['quantity'], product['product_uom_id'][1] ] for product in products]
-            #print(self.product_id_values_quantity)
-            product_values = [product[1] for product in self.product_id_values_quantity]
-            main_view.action_frame.product.configure(values=product_values)
-            main_view.action_frame.product.set(self.product_id_values_quantity[0][1])
-            color = 'green' if self.product_id_values_quantity[0][2] > 0 else 'red'
-            main_view.action_frame.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,} {}'\
-                            .format(round(self.product_id_values_quantity[0][2], 2),self.product_id_values_quantity[0][3]).replace(',', ' '), text_color=color)
-        else:
-            main_view.action_frame.product.configure(values=['NO PRODUCT'])
-            main_view.action_frame.product.set('NO PRODUCT')
-            main_view.action_frame.product_disponible_quantity_label.configure(text = 'Quantite disponible : 0', text_color='black')
+                self.product_id_values_quantity = [[ product['product_id'][0], product['product_id'][1],\
+                                                product['quantity'], product['product_uom_id'][1] ] for product in products]
+                #print(self.product_id_values_quantity)
+                product_values = [product[1] for product in self.product_id_values_quantity]
+                main_view.action_frame.product.configure(values=product_values)
+                main_view.action_frame.product.set(self.product_id_values_quantity[0][1])
+                color = 'green' if self.product_id_values_quantity[0][2] > 0 else 'red'
+                main_view.action_frame.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,} {}'\
+                                .format(round(self.product_id_values_quantity[0][2], 2),self.product_id_values_quantity[0][3]).replace(',', ' '), text_color=color)
+            else:
+                main_view.action_frame.product.configure(values=['NO PRODUCT'])
+                main_view.action_frame.product.set('NO PRODUCT')
+                main_view.action_frame.product_disponible_quantity_label.configure(text = 'Quantite disponible : 0', text_color='black')
         
 
     def product_check_input(self, event):

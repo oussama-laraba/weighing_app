@@ -32,6 +32,7 @@ class OdooConnection:
         self.models = xmlrpc.client.ServerProxy(f'{self.url}/xmlrpc/2/object')
 
     def state(self):
+        return self.uid
         if self.uid :
             return f'connected using uid : {self.uid}\n'
         else :

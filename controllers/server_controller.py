@@ -20,11 +20,37 @@ class SeverController():
 
     def show_create_edit_window(self, element= None):
         if element:
-            CreateUpdateServer(edit=True, server=element, validation_function= self.form_validation, button= self.edit)
+            CreateUpdateServer(edit=True, server=element, create_edit_function= self.create_edit_frame_button, button= self.edit)
         else:
-            CreateUpdateServer(button= self.create, validation_function= self.form_validation,)
+            CreateUpdateServer(button= self.create, create_edit_function= self.create_edit_frame_button,)
 
+    def create_edit_frame_button(self, element):
+        validation_text = self.form_validation(element)
+        if not validation_text:
+            print('valid')
+            data = {}
+            
+            data['ID'] = element.server.id if element.edit else None
+            data['URL'] = element.url.get().strip()
+            data['PORT'] = int(element.port.get())
+            data['DATABASE'] = element.database.get().strip()
+            data['KEY'] = element.key.get().strip()
+            element.button(data)
+
+            if element.edit:
+                element.server.data_dict.get('url').configure(text = element.url.get())
+                element.server.data_dict.get('port').configure(text = element.port.get())
+                element.server.data_dict.get('database').configure(text = element.database.get())
+                element.server.data_dict.get('key').configure(text = element.key.get())
+
+            element.destroy()
+        else: 
+            element.button1.grid_forget()
+            element.validation_text.configure(text = validation_text)
+            element.validation_text.grid(row=6, column=0,  padx=15, pady=10, sticky="ns")
+            element.button1.grid(row=7, column=0,  padx=15, pady=10, sticky="ns")
     
+
     def create(self, data):
         id = self.model.create_query(data)
         keys = list(data.keys())

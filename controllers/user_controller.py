@@ -6,6 +6,7 @@ from templates.scrollable_list_frame import ScrollableListFrame, DeleteConfirmat
 from views.user_view import UserView, CreateUpdateUser
 from models.user import UserModel
 from models.server import ServerModel
+from api.stock import check_connection
 
 
 class UserController():
@@ -22,11 +23,38 @@ class UserController():
 
     def show_create_edit_window(self, element= None):
         if element:
-            CreateUpdateUser(server_model= self.server_model, user=element, button= self.edit, validation_function= self.form_validation)
+            CreateUpdateUser(server_model= self.server_model, user=element, button= self.edit, create_edit_function= self.create_edit_frame_button)
         else:
-            CreateUpdateUser(server_model= self.server_model, button= self.create, validation_function= self.form_validation)
+            CreateUpdateUser(server_model= self.server_model, button= self.create, create_edit_function= self.create_edit_frame_button)
 
+    def create_edit_frame_button(self, element):
+        validation_text = self.form_validation(element)
+        if not validation_text:
+            print('valid')
+            data = {}
+            
+            data['ID'] = element.user.id if element.user else None
+            data['EMAIL'] = element.email.get().strip()
+            data['PASSWORD'] = element.password.get().strip()
+            data['URL_ID'] = int(element.url_id)
+            data['COMPANY'] = element.company.get().strip()
+            element.button(data)
+
+            if element.user:
+                element.user.data_dict.get('email').configure(text = element.email.get())
+                element.user.data_dict.get('password').configure(text = ''.join('*' for _ in range(len(element.password.get()))))
+                element.user.data_dict.get('url_id').configure(text = element.url_names.get())
+                element.user.data_dict.get('company').configure(text = element.company.get())
+
+            element.destroy()
+        else: 
+            element.button1.grid_forget()
+            element.validation_text.configure(text = validation_text)
+            element.validation_text.grid(row=6, column=0,  padx=15, pady=10, sticky="ns")
+            element.button1.grid(row=7, column=0,  padx=15, pady=10, sticky="ns")
     
+
+
     def create(self, data):
         id = self.model.create_query(data)
         keys = list(data.keys())
@@ -64,6 +92,11 @@ class UserController():
         if len(records) > 1 or (len(records) == 1 and (element.id,) not in records):
             return 'Cette enregistrement il exist déja '
 
+        server_data = self.server_model.select_query(columns=['URL', 'PORT', 'DATABASE'], conditions = {'ID': element.url_id})[0]
+        connection_data = {'url':server_data[0]+':'+str(server_data[1]), 'db':server_data[2], 'user':element.email.get().strip(), 'key':element.password.get().strip()}
+        print(connection_data)
+        if not check_connection(connection_data):
+            return 'Les informations de connexion sont fauses'
         return None
 
     def delete(self, element):

@@ -73,6 +73,8 @@ class ProductController():
                         for add_location in to_add_location:
                             db_product_id = self.model.select_query(columns=['ID'], conditions={'ODOO_ID': rec.get('id')})
                             db_location_id = self.stock_location_model.select_query(columns=['ID'], conditions={'ODOO_ID': add_location})
+                            print(db_product_id)
+                            print(db_location_id)
                             data = {'STOCK_LOCATION_ID': db_location_id[0][0], 'PRODUCT_ID':db_product_id[0][0]}
                             self.product_location_model.create_query(data)
                             print('add location to product')

@@ -101,7 +101,7 @@ class ActionFrame(ctk.CTkFrame):
         self.product_time.grid(row=2, column=2, sticky="w", pady=(0,10))
         self.product_time.configure(state='disabled')
 
-        self.confirm_product_quantity_label = ctk.CTkLabel(self.product_quantity_frame, text="Confirmer Poids")
+        self.confirm_product_quantity_label = ctk.CTkLabel(self.product_quantity_frame, text="Confirmer Poids Confirme")
         self.confirm_product_quantity_label.grid(row=3, column=0, sticky="w")
 
         self.confirm_product_quantity = ctk.CTkEntry(self.product_quantity_frame,

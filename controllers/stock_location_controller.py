@@ -42,6 +42,7 @@ class StockLocationController():
     def refresh(self):
         # get stock location from odoo api
         stock_location = self.api_connection.get_locations(['id','location_id' , 'company_id', 'display_name'])
+        print("location geted")
         # get all stock location ids from sqlite database
         db_ids= self.model.select_query(columns=['ODOO_ID'])
 
