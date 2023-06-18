@@ -11,10 +11,9 @@ from models.stock_location import StockLocationModel
 
 
 class ProductController():
-    def __init__(self, view_master= None, db=None, api=None, columns= None, db_name= None):
+    def __init__(self, view_master= None, db=None, api=None, columns= None, refresh_db_function=None):
 
         self.columns= columns
-        self.db_name= db_name
         self.api = api
         self.model= ProductModel(db=db)
         self.stock_location_model = StockLocationModel(db=db)
@@ -22,64 +21,66 @@ class ProductController():
         self.view_master= view_master
         self.location_values_id = {}
         self.product_frame = self.get_view()
+        self.refresh_db_function = refresh_db_function
 
 
     def refresh(self):
-        api_products = self.api.get_stockable_product()
+        self.refresh_db_function()
+        # api_products = self.api.get_stockable_product()
 
-        if api_products:
-            db_ids = self.model.select_query(columns=['ODOO_ID'])
-            #self.model.delete_all_query()
-            db_ids_dict = {}
-            for id in db_ids:
-                db_ids_dict[str(id[0])]= 1
-            #db_ids = list(map(lambda x: db_ids_dict[str(x[0])]= 1, db_ids))
+        # if api_products:
+        #     db_ids = self.model.select_query(columns=['ODOO_ID'])
+        #     #self.model.delete_all_query()
+        #     db_ids_dict = {}
+        #     for id in db_ids:
+        #         db_ids_dict[str(id[0])]= 1
+        #     #db_ids = list(map(lambda x: db_ids_dict[str(x[0])]= 1, db_ids))
             
-            #print(db_ids)
-            self.product_location_model.delete_all()
-            # string have all product in coming from odoo api
-            product_ids = ''
+        #     #print(db_ids)
+        #     self.product_location_model.delete_all()
+        #     # string have all product in coming from odoo api
+        #     product_ids = ''
 
-            for rec in api_products:
-                product_ids += str(rec['id'])+','
-                data = {}
+        #     for rec in api_products:
+        #         product_ids += str(rec['id'])+','
+        #         data = {}
 
-                #check if the product note in the database then add it
-                if not db_ids_dict.get(str(rec['id'])):
-                    data = {'ODOO_ID': rec['id'], 'NAME': rec['name']}
-                    product_id = self.model.create_query(data)
-                    if rec.get('location_id'):
-                        for location in rec.get('location_id'):
-                            location_id = self.stock_location_model.select_query(columns=['ID'], conditions={'ODOO_ID': location})
-                            data = {'STOCK_LOCATION_ID': location_id[0][0], 'PRODUCT_ID':product_id}
-                            self.product_location_model.create_query(data)
-                else:
-                    db_product_location_copy = self.model.get_product_locations(rec['id'])
-                    db_product_location = list()
-                    for location in db_product_location_copy:
-                        db_product_location.append(location[0])
-                    del db_product_location_copy
+        #         #check if the product note in the database then add it
+        #         if not db_ids_dict.get(str(rec['id'])):
+        #             data = {'ODOO_ID': rec['id'], 'NAME': rec['name']}
+        #             product_id = self.model.create_query(data)
+        #             if rec.get('location_id'):
+        #                 for location in rec.get('location_id'):
+        #                     location_id = self.stock_location_model.select_query(columns=['ID'], conditions={'ODOO_ID': location})
+        #                     data = {'STOCK_LOCATION_ID': location_id[0][0], 'PRODUCT_ID':product_id}
+        #                     self.product_location_model.create_query(data)
+        #         else:
+        #             db_product_location_copy = self.model.get_product_locations(rec['id'])
+        #             db_product_location = list()
+        #             for location in db_product_location_copy:
+        #                 db_product_location.append(location[0])
+        #             del db_product_location_copy
                     
-                    if rec.get('location_id'): 
-                        api_product_location = rec.get('location_id')
-                        to_remove_location = list(set(db_product_location)- set(api_product_location))
-                        to_add_location = list(set(api_product_location)- set(db_product_location))
-                        for rm_location in to_remove_location:
-                            self.product_location_model.delete(rec.get('id'), rm_location)
+        #             if rec.get('location_id'): 
+        #                 api_product_location = rec.get('location_id')
+        #                 to_remove_location = list(set(db_product_location)- set(api_product_location))
+        #                 to_add_location = list(set(api_product_location)- set(db_product_location))
+        #                 for rm_location in to_remove_location:
+        #                     self.product_location_model.delete(rec.get('id'), rm_location)
 
-                        for add_location in to_add_location:
-                            db_product_id = self.model.select_query(columns=['ID'], conditions={'ODOO_ID': rec.get('id')})
-                            db_location_id = self.stock_location_model.select_query(columns=['ID'], conditions={'ODOO_ID': add_location})
+        #                 for add_location in to_add_location:
+        #                     db_product_id = self.model.select_query(columns=['ID'], conditions={'ODOO_ID': rec.get('id')})
+        #                     db_location_id = self.stock_location_model.select_query(columns=['ID'], conditions={'ODOO_ID': add_location})
                             
-                            data = {'STOCK_LOCATION_ID': db_location_id[0][0], 'PRODUCT_ID':db_product_id[0][0]}
-                            self.product_location_model.create_query(data)
-                            print('add location to product')
+        #                     data = {'STOCK_LOCATION_ID': db_location_id[0][0], 'PRODUCT_ID':db_product_id[0][0]}
+        #                     self.product_location_model.create_query(data)
+        #                     print('add location to product')
                             
 
-            product_ids = product_ids[:-1]
+        #     product_ids = product_ids[:-1]
 
-            self.model.delete_not_in_query(product_ids)
-            self.initialize_view(self.product_frame)
+        #     self.model.delete_not_in_query(product_ids)
+        self.initialize_view(self.product_frame)
         pass
         
 

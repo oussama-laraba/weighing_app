@@ -9,14 +9,14 @@ from models.stock_location import StockLocationModel
 
 
 class StockLocationController():
-    def __init__(self, view_master= None, db=None, api=None, columns= None, db_name= None):
+    def __init__(self, view_master= None, db=None, api=None, columns= None, refresh_db_function= None):
 
         self.columns= columns
-        self.db_name= db_name
         self.model= StockLocationModel(db=db)
         self.api = api
         self.view_master= view_master
         self.stock_location_frame = self.get_view()
+        self.refresh_db_function = refresh_db_function
         
 
     def create(self, data):
@@ -40,25 +40,26 @@ class StockLocationController():
         
     
     def refresh(self):
-        # get stock location from odoo api
-        stock_location = self.api.get_locations(['id','location_id' , 'company_id', 'display_name'])
+        # # get stock location from odoo api
+        # stock_location = self.api.get_locations(['id','location_id' , 'company_id', 'display_name'])
 
-        # get all stock location ids from sqlite database
-        db_ids= self.model.select_query(columns=['ODOO_ID'])
+        # # get all stock location ids from sqlite database
+        # db_ids= self.model.select_query(columns=['ODOO_ID'])
 
-        db_ids_dict = {}
-        db_ids = list(map(lambda x: db_ids_dict.update({str(x[0]): 1}), db_ids))
+        # db_ids_dict = {}
+        # db_ids = list(map(lambda x: db_ids_dict.update({str(x[0]): 1}), db_ids))
         
-        # string have all
-        stock_location_ids = ''
-        for rec in stock_location:
-            stock_location_ids += str(rec['id'])+','
-            data = {}
-            if not db_ids_dict.get(str(rec['id'])):
-                data= {'ODOO_ID': rec['id'], 'LOCATION': rec['display_name'], 'COMPANY_ID': rec['company_id']}
-                self.model.create_query(data)
-        stock_location_ids = stock_location_ids[:-1]
-        self.model.delete_query(stock_location_ids)
+        # # string have all
+        # stock_location_ids = ''
+        # for rec in stock_location:
+        #     stock_location_ids += str(rec['id'])+','
+        #     data = {}
+        #     if not db_ids_dict.get(str(rec['id'])):
+        #         data= {'ODOO_ID': rec['id'], 'LOCATION': rec['display_name'], 'COMPANY_ID': rec['company_id']}
+        #         self.model.create_query(data)
+        # stock_location_ids = stock_location_ids[:-1]
+        # self.model.delete_query(stock_location_ids)
+        self.refresh_db_function()
         self.initialize_view(self.stock_location_frame)
         pass
 
