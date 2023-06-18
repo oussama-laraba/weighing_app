@@ -26,15 +26,18 @@ def gen_bar_code(sequence, path_to_wkhtmltopdf =path_to_wkhtmltopdf,
     config = pdfkit.configuration(wkhtmltopdf = path_to_wkhtmltopdf)
     pdfkit.from_file(path_to_file, output_path = 'static/pdf/bar_code.pdf', configuration = config , options = {"enable-local-file-access": ""})
 
+
 def print_bar_code(sequence ,path_to_file = 'static/images/barcode.pdf'):
     gen_bar_code(sequence)    
     os.system(f"lpr -P canonG3010Series {path_to_file}")
+
 
 def write_html(path, content ):
     filled_html = open(rf'{path}', "w")
     filled_html.write(" ")
     filled_html.write(content)
     filled_html.close()
+
 
 def fill_html_templates( product_name,lot,weight,uom,qte,extra_info, size = 5.82, padding_LR = 10,):
     html_file = open(r'static/html/template.html', "r")
@@ -47,7 +50,6 @@ def fill_html_templates( product_name,lot,weight,uom,qte,extra_info, size = 5.82
         filled_template = filled_template.replace(f'[{key}]' , f'{dict[key]}')
 
     write_html(path = 'static/html/display_filled_template.html',content = filled_template)
-
     ######## adjust the size of the filled html
     width = (size  *45)   - (padding_LR*2)# 1cm ~= 45 px
     bar_code_size = width*0.46 

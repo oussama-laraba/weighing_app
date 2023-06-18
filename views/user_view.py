@@ -11,7 +11,6 @@ from models.server import ServerModel
 
 
 class UserView(ctk.CTkFrame):
-
     def __init__(self, master, buttons=None, **kwargs ):
         super().__init__(master, **kwargs)
 
@@ -74,11 +73,8 @@ class CreateUpdateUser(tk.Tk):
         #self.url_id=customtkinter.CTkEntry(master=self, width=220, placeholder_text='url_id')
         self.url_id = self.url_id_names[0][0]
 
-
         self.company=ctk.CTkEntry(master=self, width=220, placeholder_text='Entreprise')
         self.company.grid(row=4, column=0,  padx=15, pady=5, sticky="ns")
-
-
 
         if self.user:
             self.id = self.user.id
@@ -89,16 +85,14 @@ class CreateUpdateUser(tk.Tk):
             pass
 
         self.validation_text =ctk.CTkLabel(master=self, text='', font=('Century Gothic bold',15), text_color='red')
-        
 
         self.button1 = ctk.CTkButton(master=self, width=220, text="Save", command= lambda: self.button_function(create_edit_function), corner_radius=6)
         self.button1.grid(row=6, column=0,  padx=15, pady=30, sticky="ns")
 
 
     def button_function(self, create_edit_function):
-
         create_edit_function(self)
-        
+
 
     def change_url(self,name):
         id = list(filter(lambda x: x[1] == name,self.url_id_names))[0][0]

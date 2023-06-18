@@ -37,19 +37,14 @@ class Refresh():
         self.location_model.delete_query(stock_location_ids)
 
 
-
     def refresh_product(self):
         api_products = self.api.get_stockable_product()
-
         if api_products:
             db_ids = self.product_model.select_query(columns=['ODOO_ID'])
-            #self.model.delete_all_query()
             db_ids_dict = {}
             for id in db_ids:
                 db_ids_dict[str(id[0])]= 1
-            #db_ids = list(map(lambda x: db_ids_dict[str(x[0])]= 1, db_ids))
-            
-            #print(db_ids)
+
             self.product_location_model.delete_all()
             # string have all product in coming from odoo api
             product_ids = ''
@@ -57,7 +52,6 @@ class Refresh():
             for rec in api_products:
                 product_ids += str(rec['id'])+','
                 data = {}
-
                 #check if the product note in the database then add it
                 if not db_ids_dict.get(str(rec['id'])):
                     data = {'ODOO_ID': rec['id'], 'NAME': rec['name']}
@@ -88,8 +82,7 @@ class Refresh():
                             data = {'STOCK_LOCATION_ID': db_location_id[0][0], 'PRODUCT_ID':db_product_id[0][0]}
                             self.product_location_model.create_query(data)
                             print('add location to product')
-                            
-
+            
             product_ids = product_ids[:-1]
-
             self.product_model.delete_not_in_query(product_ids)
+            print('finish refreshing product')

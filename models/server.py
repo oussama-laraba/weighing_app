@@ -1,8 +1,8 @@
 
 class ServerModel():
-
     def __init__(self, db=None):
         self.db = db
+
 
     def select_query(self, columns='*', conditions= None):
         cursor = self.db.cursor()
@@ -17,11 +17,10 @@ class ServerModel():
                 query+= '  '+condition[0].upper()+' = "'+str(condition[1])+'" AND'
             query= query[:-3]
         query+=';'
-
         data = cursor.execute(query).fetchall()
         cursor.close()
         return data
-        
+
 
     def create_query(self, data):
         cursor = self.db.cursor()
@@ -38,9 +37,9 @@ class ServerModel():
         self.db.commit()
         return id
 
+
     def update_query(self, data):
         cursor = self.db.cursor()
-
         cursor.execute('UPDATE SERVER SET\
                         URL = "{}" , PORT = {}, DATABASE = "{}", KEY = "{}"\
                         WHERE ID = {};'.format(
@@ -53,10 +52,9 @@ class ServerModel():
         cursor.close()
         self.db.commit()
 
+
     def delete_query(self, id):
         cursor = self.db.cursor()
         cursor.execute(f'DELETE FROM SERVER WHERE ID = {id};')
         cursor.close()
         self.db.commit()
-
-    

@@ -9,7 +9,6 @@ from templates.scrollable_list_frame import ScrollableListFrame
 from models.stock_location import StockLocationModel
 
 class StockLocationView(ctk.CTkFrame):
-
     def __init__(self, master, buttons=None, **kwargs ):
         super().__init__(master, **kwargs)
 

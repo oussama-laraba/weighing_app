@@ -2,27 +2,25 @@ import sys
 
 # setting path
 sys.path.append('../weighing')
-from templates.scrollable_list_frame import ScrollableListFrame, DeleteConfirmation
 from views.server_view import ServerView, CreateUpdateServer
 from models.server import ServerModel
 
 
 class SeverController():
-
     def __init__(self, view_master= None, db=None, columns= None, db_name= None):
-
         self.columns= columns
         self.db_name= db_name
         self.model= ServerModel(db=db)
         self.view_master= view_master
         self.server_frame = self.get_view()
-        
+
 
     def show_create_edit_window(self, element= None):
         if element:
             CreateUpdateServer(edit=True, server=element, create_edit_function= self.create_edit_frame_button, button= self.edit)
         else:
             CreateUpdateServer(button= self.create, create_edit_function= self.create_edit_frame_button,)
+
 
     def create_edit_frame_button(self, element):
         validation_text = self.form_validation(element)
@@ -41,14 +39,14 @@ class SeverController():
                 element.server.data_dict.get('port').configure(text = element.port.get())
                 element.server.data_dict.get('database').configure(text = element.database.get())
                 element.server.data_dict.get('key').configure(text = element.key.get())
-
             element.destroy()
+
         else: 
             element.button1.grid_forget()
             element.validation_text.configure(text = validation_text)
             element.validation_text.grid(row=6, column=0,  padx=15, pady=10, sticky="ns")
             element.button1.grid(row=7, column=0,  padx=15, pady=10, sticky="ns")
-    
+
 
     def create(self, data):
         id = self.model.create_query(data)
@@ -61,11 +59,10 @@ class SeverController():
         color, bg_color = ('green','#e0e0e0') if len(self.server_frame.server_list.frame_list)%2 == 1 else ('blue violet','#C0C0C0')
 
         self.server_frame.server_list.create_elements(data, color, bg_color)
-        
+
 
     def edit(self, data):
         self.model.update_query(data)
-        
 
 
     def form_validation(self, element):
@@ -89,13 +86,16 @@ class SeverController():
 
         return None
 
+
     def delete(self, element):
         DeleteConfirmation(element, self.delete_confirmation)
+
 
     def delete_confirmation(self, element):
         self.model.delete_query(element.id)
         self.server_frame.server_list.frame_list = list(filter(lambda x: x.id != element.id, self.server_frame.server_list.frame_list))
         element.destroy()        
+
 
     def get_view(self):
         buttons = {'edit': self.show_create_edit_window, 'delete': self.delete}
@@ -103,7 +103,7 @@ class SeverController():
         server_view.add_button.configure(command=self.show_create_edit_window)
         self.initialize_view(server_view)
         return server_view
-        
+
 
     def initialize_view(self, server_view):
         data = self.model.select_query('*')
@@ -112,4 +112,3 @@ class SeverController():
 
             color, fg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
             server_view.server_list.create_elements(instance_dict, color, fg_color)
-        #server_view.server_list.server_initialize(data)
