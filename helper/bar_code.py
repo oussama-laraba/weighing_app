@@ -1,11 +1,21 @@
+import sys
+# setting path
+sys.path.append('../weighing')
 import barcode
 from barcode.writer import ImageWriter
+from sys import platform
 import os
 from PIL import Image
 import pdfkit
 from pdf2image import convert_from_path
 
-def gen_bar_code(sequence, path_to_wkhtmltopdf = r'/usr/bin/wkhtmltopdf', 
+print(platform)
+if platform in ['win32','win64']:
+    path_to_wkhtmltopdf = "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe"
+else:
+    path_to_wkhtmltopdf = r'/usr/bin/wkhtmltopdf'
+
+def gen_bar_code(sequence, path_to_wkhtmltopdf =path_to_wkhtmltopdf, 
                     path_to_file = 'static/html/bar_code.html'  ):
     
     barcode_format = barcode.get_barcode_class('code128')
@@ -51,19 +61,23 @@ def fill_html_templates( product_name,lot,weight,uom,qte,extra_info, size = 5.82
     write_html(path = 'static/html/filled_template.html',content = filled_template)
 
     ## Convert html to pdf 
-    path_to_wkhtmltopdf = r'/usr/bin/wkhtmltopdf'
     config = pdfkit.configuration(wkhtmltopdf = path_to_wkhtmltopdf)
     pdfkit.from_file('static/html/filled_template.html', output_path='static/pdf/filled_template.pdf', configuration=config , options={"enable-local-file-access": ""})
     pdfkit.from_file('static/html/display_filled_template.html', output_path='static/pdf/display_filled_template.pdf', configuration=config , options={"enable-local-file-access": ""})
 
-def gen_display_filled_template_snapshot():
-    images = convert_from_path('static/pdf/display_filled_template.pdf')
+def gen_display_filled_template_snapshot(): 
+    images = ''    
+    if platform in ['win32','win64']:
+        images = convert_from_path(os.path.join('static/pdf', "display_filled_template.pdf"),poppler_path=r'C:\\Program Files\\poppler-0.68.0\\bin' )
 
+    else:
+        images = convert_from_path('static/pdf/display_filled_template.pdf')
+    
     width,height = images[0].size
-    left,top,right,bottom = 0,0,width/4,height/2.6
+    left,top,right,bottom = 60,60,width/3.5,height/2.6
 
     filled_template_snapshot = images[0].crop((left, top, right, bottom))
-    filled_template_snapshot.save('static/images/display_filled_template.png')
+    filled_template_snapshot.save(r'static/images/display_filled_template.png' )
 
 fill_html_templates('Bobine','00000007',1000,'Kg', 2000,'info supplementaire ')
 gen_display_filled_template_snapshot()
