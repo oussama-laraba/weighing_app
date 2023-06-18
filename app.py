@@ -14,7 +14,7 @@ from controllers.product_controller import ProductController
 from controllers.main_controller import MainController
 
 from helper.weighing import WeighingScaleConnection
-
+from helper.refresh_db import Refresh
 
 global server_list
 global user_list
@@ -123,7 +123,7 @@ class App2(customtkinter.CTk):
 
         self.db = DbConnection().db
         self.api = ApiConnection(db=self.db)
-
+        self.refresher = Refresh(api= self.api, db= self.db)
         # self.main_frame= MainFrame(master=self, fg_color='#D2D7D3')
         # self.main_frame.grid(row=1, column=1, sticky="nsew")
         
@@ -202,7 +202,7 @@ class App2(customtkinter.CTk):
 
         # show selected frame
         if name == "servers":
-            self.server_frame = SeverController(view_master=self, db=self.db).server_frame
+            self.server_frame = SeverController(view_master=self, db=self.db ).server_frame
             self.server_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
             if self.server_frame:
@@ -229,7 +229,7 @@ class App2(customtkinter.CTk):
 
         # show selected frame
         if name == "location":
-            self.stock_location_frame = StockLocationController(view_master = self, db=self.db, api=self.api).stock_location_frame
+            self.stock_location_frame = StockLocationController(view_master = self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh_location).stock_location_frame
             self.stock_location_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
             if self.stock_location_frame:
@@ -249,7 +249,7 @@ class App2(customtkinter.CTk):
         
         # show selected frame
         if name == "stockable_product":
-            self.stockable_product_frame = ProductController(view_master=self, db=self.db, api=self.api).product_frame
+            self.stockable_product_frame = ProductController(view_master=self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh_product).product_frame
             self.stockable_product_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
             if self.stockable_product_frame:

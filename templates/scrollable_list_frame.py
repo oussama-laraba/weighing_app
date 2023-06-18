@@ -14,6 +14,13 @@ class ScrollableListFrame(ctk.CTkScrollableFrame):
         super().__init__(master, **kwargs)
 
         self.grid_columnconfigure(0, weight=1)
+        # self.grid_propagate(False)
+        # canvas = tk.Canvas(self, bg="yellow")
+        # canvas.grid(row=1, column=0, sticky="news")
+
+        # vsb = tk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        # vsb.grid(row=1, column=1, sticky='ns')
+        # canvas.configure(yscrollcommand=vsb.set)
         self.frame_list = []
         self.labels= labels
         self.buttons= buttons

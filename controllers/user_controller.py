@@ -48,6 +48,8 @@ class UserController():
             
             element.destroy()
             self.view_master.api.api_connection = self.view_master.api.connect_api()
+            self.view_master.refresher.refresh_location()
+            self.view_master.refresher.refresh_product()
         else: 
             element.button1.grid_forget()
             element.validation_text.configure(text = validation_text)
