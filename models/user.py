@@ -60,6 +60,7 @@ class UserModel():
                             data.get('COMPANY'),
                             data.get('ID')
                         ))
+        print('user update')
         cursor.close()
         self.db.commit()
 

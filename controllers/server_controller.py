@@ -27,7 +27,6 @@ class SeverController():
     def create_edit_frame_button(self, element):
         validation_text = self.form_validation(element)
         if not validation_text:
-            print('valid')
             data = {}
             
             data['ID'] = element.server.id if element.edit else None

@@ -23,11 +23,11 @@ class UserController():
 
     def show_create_edit_window(self, element= None):
         if element:
-            CreateUpdateUser(server_model= self.server_model, user=element, button= self.edit, create_edit_function= self.create_edit_frame_button)
+            CreateUpdateUser(server_model= self.server_model, user=element, button= self.edit, create_edit_function= self.create_edit_button)
         else:
-            CreateUpdateUser(server_model= self.server_model, button= self.create, create_edit_function= self.create_edit_frame_button)
+            CreateUpdateUser(server_model= self.server_model, button= self.create, create_edit_function= self.create_edit_button)
 
-    def create_edit_frame_button(self, element):
+    def create_edit_button(self, element):
         validation_text = self.form_validation(element)
         if not validation_text:
             print('valid')
@@ -45,14 +45,16 @@ class UserController():
                 element.user.data_dict.get('password').configure(text = ''.join('*' for _ in range(len(element.password.get()))))
                 element.user.data_dict.get('url_id').configure(text = element.url_names.get())
                 element.user.data_dict.get('company').configure(text = element.company.get())
-
+            
             element.destroy()
+            self.view_master.api.api_connection = self.view_master.api.connect_api()
         else: 
             element.button1.grid_forget()
             element.validation_text.configure(text = validation_text)
             element.validation_text.grid(row=6, column=0,  padx=15, pady=10, sticky="ns")
             element.button1.grid(row=7, column=0,  padx=15, pady=10, sticky="ns")
-    
+
+        
 
 
     def create(self, data):
