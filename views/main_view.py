@@ -5,8 +5,6 @@ import os
 from PIL import Image
 
 
-
-
 class ActionFrame(ctk.CTkFrame):
     def __init__(self, master,  **kwargs):
         super().__init__(master, **kwargs)
@@ -110,7 +108,6 @@ class ActionFrame(ctk.CTkFrame):
         self.button_create_bar_code.grid(row=2, column=0, sticky="w",  pady=(10,10))
 
         self.form_validation_label = ctk.CTkLabel(self.extra_info_frame, text='problem', font=('', 14),width=450)
-
 
 
 
