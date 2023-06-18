@@ -17,12 +17,12 @@ import threading
 import datetime
 
 class MainController():
-    def __init__(self, view_master= None, db= None, api_connection=None,  db_name= None):
+    def __init__(self, view_master= None, db= None, api=None,  db_name= None):
 
         self.db_name= db_name
         #self.model= MainModel()
         self.db = db
-        self.api_connection = api_connection
+        self.api = api
         self.view_master= view_master
         self.stock_location_model = StockLocationModel(db=db)
         self.product_location_model = ProductLocationModel(db=db)
@@ -126,7 +126,7 @@ class MainController():
         #                             INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID\
         #                             AND  SL.LOCATION = "{}";'.format(self.location.get())).fetchall()
         if main_view.action_frame.location.get() != 'NO EMPLACEMENTS':
-            products = self.api_connection.main_product_stock(self.location_values_id[main_view.action_frame.location.get()])
+            products = self.api.main_product_stock(self.location_values_id[main_view.action_frame.location.get()])
             
             if products:
 

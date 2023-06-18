@@ -29,12 +29,12 @@ class ApiConnection():
         possible_connection = cursor.fetchall()
         cursor.close()
         for connection in possible_connection:
-            print('api connection')
             url  = connection[1]+':'+str(connection[2])
             db =  connection[3]
             #key = connection[4]
             key= connection[-1]
             user = connection[5]
+
             try:
                 con = OdooStockapi(url, db, user, key)
                 return con    

@@ -61,7 +61,7 @@ class CreateUpdateServer(ctk.CTk):
         self.key=ctk.CTkEntry(master=self, width=220, placeholder_text='Key')
         self.key.grid(row=4, column=0,  padx=15, pady=5, sticky="ns")
 
-        print(server)
+
 
         if self.server:
             self.id = self.server.id

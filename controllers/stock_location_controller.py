@@ -9,12 +9,12 @@ from models.stock_location import StockLocationModel
 
 
 class StockLocationController():
-    def __init__(self, view_master= None, db=None, api_connection=None, columns= None, db_name= None):
+    def __init__(self, view_master= None, db=None, api=None, columns= None, db_name= None):
 
         self.columns= columns
         self.db_name= db_name
         self.model= StockLocationModel(db=db)
-        self.api_connection = api_connection
+        self.api = api
         self.view_master= view_master
         self.stock_location_frame = self.get_view()
         
@@ -41,8 +41,8 @@ class StockLocationController():
     
     def refresh(self):
         # get stock location from odoo api
-        stock_location = self.api_connection.get_locations(['id','location_id' , 'company_id', 'display_name'])
-        print("location geted")
+        stock_location = self.api.get_locations(['id','location_id' , 'company_id', 'display_name'])
+
         # get all stock location ids from sqlite database
         db_ids= self.model.select_query(columns=['ODOO_ID'])
 

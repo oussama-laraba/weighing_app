@@ -11,11 +11,11 @@ from models.stock_location import StockLocationModel
 
 
 class ProductController():
-    def __init__(self, view_master= None, db=None, api_connection=None, columns= None, db_name= None):
+    def __init__(self, view_master= None, db=None, api=None, columns= None, db_name= None):
 
         self.columns= columns
         self.db_name= db_name
-        self.api_connection = api_connection
+        self.api = api
         self.model= ProductModel(db=db)
         self.stock_location_model = StockLocationModel(db=db)
         self.product_location_model = ProductLocationModel(db=db)
@@ -25,7 +25,7 @@ class ProductController():
 
 
     def refresh(self):
-        api_products = self.api_connection.get_stockable_product()
+        api_products = self.api.get_stockable_product()
 
         if api_products:
             db_ids = self.model.select_query(columns=['ODOO_ID'])
@@ -53,7 +53,6 @@ class ProductController():
                             location_id = self.stock_location_model.select_query(columns=['ID'], conditions={'ODOO_ID': location})
                             data = {'STOCK_LOCATION_ID': location_id[0][0], 'PRODUCT_ID':product_id}
                             self.product_location_model.create_query(data)
-                            print('add product')
                 else:
                     db_product_location_copy = self.model.get_product_locations(rec['id'])
                     db_product_location = list()
@@ -65,16 +64,13 @@ class ProductController():
                         api_product_location = rec.get('location_id')
                         to_remove_location = list(set(db_product_location)- set(api_product_location))
                         to_add_location = list(set(api_product_location)- set(db_product_location))
-                        print(db_product_location)
                         for rm_location in to_remove_location:
-                            print('remove location from product')
                             self.product_location_model.delete(rec.get('id'), rm_location)
 
                         for add_location in to_add_location:
                             db_product_id = self.model.select_query(columns=['ID'], conditions={'ODOO_ID': rec.get('id')})
                             db_location_id = self.stock_location_model.select_query(columns=['ID'], conditions={'ODOO_ID': add_location})
-                            print(db_product_id)
-                            print(db_location_id)
+                            
                             data = {'STOCK_LOCATION_ID': db_location_id[0][0], 'PRODUCT_ID':db_product_id[0][0]}
                             self.product_location_model.create_query(data)
                             print('add location to product')

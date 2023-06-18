@@ -9,7 +9,6 @@ class WeighingConnection(serial.Serial):
         try:
             record = self.readlines()
             if record:
-                print("hello weighing")
                 data_dict['date']= record[0].decode('utf-8').split(' ')[-1].strip('\r\n')
                 data_dict['time'] = record[1].decode('utf-8').split(' ')[-1].strip('\r\n')
                 data_dict['gross']=  float(record[2].decode('utf-8').split(' ')[-1].strip('\r\n').split('kg')[0])

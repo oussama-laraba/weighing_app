@@ -122,7 +122,7 @@ class App2(customtkinter.CTk):
         self.grid_rowconfigure(1, weight=1)
 
         self.db = DbConnection().db
-        self.api_connection = ApiConnection(db=self.db)
+        self.api = ApiConnection(db=self.db)
 
         # self.main_frame= MainFrame(master=self, fg_color='#D2D7D3')
         # self.main_frame.grid(row=1, column=1, sticky="nsew")
@@ -145,7 +145,7 @@ class App2(customtkinter.CTk):
         #self.stockable_product_frame = ProductFrame(master=self, fg_color='white')
         self.stockable_product_frame = None
         
-        self.main_controller = MainController(view_master=self, db=self.db, api_connection=self.api_connection)
+        self.main_controller = MainController(view_master=self, db=self.db, api=self.api)
         self.main_frame = self.main_controller.main_frame
         self.main_frame.grid(row=1, column=1, sticky="nsew")
         self.main_controller.open_thread()
@@ -168,7 +168,7 @@ class App2(customtkinter.CTk):
         self.close_stock_frames()
 
         if name == "main": 
-            self.main_controller = MainController(view_master=self, db=self.db, api_connection=self.api_connection)
+            self.main_controller = MainController(view_master=self, db=self.db, api=self.api)
             self.main_frame = self.main_controller.main_frame
             self.main_frame.grid(row=1, column=1, sticky="nsew")
             self.main_controller.open_thread()
@@ -224,13 +224,12 @@ class App2(customtkinter.CTk):
     def select_stock_frame_by_name(self, name):
         
         self.close_main_frame()
-        
         self.close_config_frames()
         self.close_product_frames()
 
         # show selected frame
         if name == "location":
-            self.stock_location_frame = StockLocationController(view_master = self, db=self.db, api_connection=self.api_connection).stock_location_frame
+            self.stock_location_frame = StockLocationController(view_master = self, db=self.db, api=self.api).stock_location_frame
             self.stock_location_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
             if self.stock_location_frame:
@@ -250,7 +249,7 @@ class App2(customtkinter.CTk):
         
         # show selected frame
         if name == "stockable_product":
-            self.stockable_product_frame = ProductController(view_master=self, db=self.db, api_connection=self.api_connection).product_frame
+            self.stockable_product_frame = ProductController(view_master=self, db=self.db, api=self.api).product_frame
             self.stockable_product_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
             if self.stockable_product_frame:
