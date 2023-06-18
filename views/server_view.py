@@ -30,13 +30,14 @@ class ServerView(ctk.CTkFrame):
 
 
 
-class CreateUpdateServer(ctk.CTk):
+class CreateUpdateServer(tk.Tk):
 
-    def __init__(self, edit=False, server=None, button= None, create_edit_function= None):
+    def __init__(self, edit=False, server=None, button= None, create_edit_function= None ,):
         super().__init__()
 
+        print('inside the createupdate init method')
         self.title("Server")
-        self.geometry("360x350")
+        self.geometry("360x350" )
         self.grid_columnconfigure(0, weight=1)
         self.button = button
         self.edit = edit

@@ -19,10 +19,12 @@ class SeverController():
         
 
     def show_create_edit_window(self, element= None):
+
         if element:
-            CreateUpdateServer(edit=True, server=element, create_edit_function= self.create_edit_frame_button, button= self.edit)
+            
+            CreateUpdateServer(edit=True, server=element, create_edit_function= self.create_edit_frame_button, button= self.edit )
         else:
-            CreateUpdateServer(button= self.create, create_edit_function= self.create_edit_frame_button,)
+            CreateUpdateServer(button= self.create, create_edit_function= self.create_edit_frame_button)
 
     def create_edit_frame_button(self, element):
         validation_text = self.form_validation(element)
