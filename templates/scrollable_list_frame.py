@@ -12,9 +12,9 @@ class ScrollableListFrame(ctk.CTkScrollableFrame):
 
     def __init__(self, master,  labels= None,  buttons= None, **kwargs):
         super().__init__(master, **kwargs)
-
+        
         self.grid_columnconfigure(0, weight=1)
-
+        self.frame_list = []
         self.labels= labels
         self.buttons= buttons
         self.frame_header = self.create_header(self.labels)
@@ -38,7 +38,6 @@ class ScrollableListFrame(ctk.CTkScrollableFrame):
 
         return header_frame
 
-
     def create_elements(self, data, color, fg_color):
         element_frame = Instance(master = self,data=data, color=color, fg_color= fg_color)
         self.frame_list.append(element_frame)
@@ -47,6 +46,7 @@ class ScrollableListFrame(ctk.CTkScrollableFrame):
 
 
 class Instance(ctk.CTkFrame):
+
     def __init__(self, master,   data=None, color=None, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -93,7 +93,6 @@ class DeleteConfirmation(ctk.CTk):
         frame = ctk.CTkFrame(master=self, width=250, height=150, fg_color="transparent")
         frame.place(relx=0.5, rely=0.5,  anchor=tk.CENTER)
         self.confirm_button = confirm_button
-
         confirm_text = ctk.CTkLabel(master = frame, text='Are you sure you want to delete ??', compound="left", padx=5, anchor="w")
         confirm_button = ctk.CTkButton(master=frame, text="ok", command= lambda: self.confirm_delete(element))
         cancel_button = ctk.CTkButton(master=frame, text="Cancel", command= lambda: self.destroy())
@@ -101,10 +100,10 @@ class DeleteConfirmation(ctk.CTk):
         confirm_text.grid(row=0, columnspan=2,  padx=15, pady=25, sticky="ns")
         confirm_button.grid(row=1, column=0, padx=5, pady=5, sticky="ns")
         cancel_button.grid(row=1, column=1,  padx=5, pady=5, sticky="ns")
-
         self.mainloop()
 
 
     def confirm_delete(self,element):
+        
         self.confirm_button(element)
         self.destroy()

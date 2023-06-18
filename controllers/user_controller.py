@@ -43,10 +43,11 @@ class UserController():
                 element.user.data_dict.get('url_id').configure(text = element.url_names.get())
                 element.user.data_dict.get('company').configure(text = element.company.get())
             
-            element.destroy()
+            
             self.view_master.api.api_connection = self.view_master.api.connect_api()
             self.view_master.refresher.refresh_location()
             self.view_master.refresher.refresh_product()
+            element.destroy()
         
         else: 
             element.button1.grid_forget()

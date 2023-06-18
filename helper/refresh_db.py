@@ -85,3 +85,4 @@ class Refresh():
             
             product_ids = product_ids[:-1]
             self.product_model.delete_not_in_query(product_ids)
+            print('finish refreshing product')
