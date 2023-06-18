@@ -31,7 +31,7 @@ class UserView(ctk.CTkFrame):
 
 
 
-class CreateUpdateUser(ctk.CTk):
+class CreateUpdateUser(tk.Tk):
 
     def __init__(self, server_model=None,  user=None, button= None, create_edit_function= None):
         super().__init__()
