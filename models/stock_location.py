@@ -1,9 +1,9 @@
 
 
 class StockLocationModel():
-
     def __init__(self, db=None):
         self.db = db
+
 
     def get_data(self):
         cursor = self.db.cursor()
@@ -11,7 +11,8 @@ class StockLocationModel():
         stock_location = cursor.fetchall()
         cursor.close()
         return stock_location
-    
+
+
     def select_query(self, columns='*', conditions= None):
         cursor = self.db.cursor()
         query= 'SELECT'
@@ -29,7 +30,7 @@ class StockLocationModel():
         data = cursor.execute(query).fetchall()
         cursor.close()
         return data
-        
+
 
     def create_query(self, data):
         cursor = self.db.cursor()
@@ -40,11 +41,11 @@ class StockLocationModel():
         cursor.close()
         return id
 
+
     def delete_query(self, ids):
         cursor = self.db.cursor()
         delete_query = 'DELETE FROM STOCK_LOCATION\
                         WHERE ODOO_ID NOT IN ('+ids+');'
-
         cursor.execute(delete_query)
         self.db.commit()
         cursor.close()

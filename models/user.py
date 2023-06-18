@@ -1,10 +1,8 @@
 
-
-
 class UserModel():
-
     def __init__(self, db=None):
         self.db = db
+
 
     def get_data(self):
         cursor = self.db.cursor()
@@ -13,8 +11,8 @@ class UserModel():
                         INNER JOIN  SERVER as S ON U.URL_ID = S.ID').fetchall()
         cursor.close()
         return users
-        
-    
+
+
     def select_query(self, columns='*', conditions= None):
         cursor = self.db.cursor()
         query= 'SELECT'
@@ -28,11 +26,10 @@ class UserModel():
                 query+= '  '+condition[0].upper()+' = "'+str(condition[1])+'" AND'
             query= query[:-3]
         query+=';'
-
         data = cursor.execute(query).fetchall()
         cursor.close()
         return data
-        
+
 
     def create_query(self, data):
         cursor = self.db.cursor()
@@ -48,9 +45,9 @@ class UserModel():
         self.db.commit()
         return id
 
+
     def update_query(self, data):
         cursor = self.db.cursor()
-
         cursor.execute('UPDATE USER SET\
                         EMAIL = "{}" , PASSWORD = "{}", URL_ID = {}, COMPANY = "{}"\
                         WHERE ID = {};'.format(
@@ -63,6 +60,7 @@ class UserModel():
         print('user update')
         cursor.close()
         self.db.commit()
+
 
     def delete_query(self, id):
         cursor = self.db.cursor()

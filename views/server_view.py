@@ -10,7 +10,6 @@ from templates.scrollable_list_frame import ScrollableListFrame
 
 
 class ServerView(ctk.CTkFrame):
-
     def __init__(self, master, buttons=None, **kwargs ):
         super().__init__(master, **kwargs)
 
@@ -61,8 +60,6 @@ class CreateUpdateServer(ctk.CTk):
         self.key=ctk.CTkEntry(master=self, width=220, placeholder_text='Key')
         self.key.grid(row=4, column=0,  padx=15, pady=5, sticky="ns")
 
-
-
         if self.server:
             self.id = self.server.id
             self.url.insert(0,self.server.data_dict.get('url').cget('text'))
@@ -72,7 +69,6 @@ class CreateUpdateServer(ctk.CTk):
             pass
 
         self.validation_text =ctk.CTkLabel(master=self, text='', font=('Century Gothic bold',15), text_color='red')
-        
 
         self.button1 = ctk.CTkButton(master=self, width=220, text="Save", command= lambda: self.button_function(create_edit_function), corner_radius=6)
         self.button1.grid(row=6, column=0,  padx=15, pady=30, sticky="ns")

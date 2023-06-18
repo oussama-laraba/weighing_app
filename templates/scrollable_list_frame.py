@@ -14,18 +14,10 @@ class ScrollableListFrame(ctk.CTkScrollableFrame):
         super().__init__(master, **kwargs)
 
         self.grid_columnconfigure(0, weight=1)
-        # self.grid_propagate(False)
-        # canvas = tk.Canvas(self, bg="yellow")
-        # canvas.grid(row=1, column=0, sticky="news")
 
-        # vsb = tk.Scrollbar(self, orient="vertical", command=canvas.yview)
-        # vsb.grid(row=1, column=1, sticky='ns')
-        # canvas.configure(yscrollcommand=vsb.set)
-        self.frame_list = []
         self.labels= labels
         self.buttons= buttons
         self.frame_header = self.create_header(self.labels)
-        
 
 
     def create_header(self, labels):
@@ -46,6 +38,7 @@ class ScrollableListFrame(ctk.CTkScrollableFrame):
 
         return header_frame
 
+
     def create_elements(self, data, color, fg_color):
         element_frame = Instance(master = self,data=data, color=color, fg_color= fg_color)
         self.frame_list.append(element_frame)
@@ -54,7 +47,6 @@ class ScrollableListFrame(ctk.CTkScrollableFrame):
 
 
 class Instance(ctk.CTkFrame):
-
     def __init__(self, master,   data=None, color=None, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -101,6 +93,7 @@ class DeleteConfirmation(ctk.CTk):
         frame = ctk.CTkFrame(master=self, width=250, height=150, fg_color="transparent")
         frame.place(relx=0.5, rely=0.5,  anchor=tk.CENTER)
         self.confirm_button = confirm_button
+
         confirm_text = ctk.CTkLabel(master = frame, text='Are you sure you want to delete ??', compound="left", padx=5, anchor="w")
         confirm_button = ctk.CTkButton(master=frame, text="ok", command= lambda: self.confirm_delete(element))
         cancel_button = ctk.CTkButton(master=frame, text="Cancel", command= lambda: self.destroy())
@@ -111,36 +104,7 @@ class DeleteConfirmation(ctk.CTk):
 
         self.mainloop()
 
+
     def confirm_delete(self,element):
-        
         self.confirm_button(element)
         self.destroy()
-
-
-
-# class CreateInstance(ctk.CTk):
-
-#     def __init__(self, edit=False, server=None,server_list=None):
-#         super().__init__()
-
-#         self.title("Create")
-#         self.geometry("360x350")
-#         self.grid_columnconfigure(0, weight=1)
-
-#         l2= ctk.CTkLabel(master=self, text=text, font=('Century Gothic',20))
-#         l2.grid(row=0, column=0,  padx=15, pady=30, sticky="ns")
-
-#         self.url=ctk.CTkEntry(master=self, width=220, placeholder_text='Url')
-#         self.url.grid(row=1, column=0,  padx=15, pady=5, sticky="ns")
-
-#         self.port=ctk.CTkEntry(master=self, width=220, placeholder_text='Port')
-#         self.port.grid(row=2, column=0,  padx=15, pady=5, sticky="ns")
-
-#         self.database=ctk.CTkEntry(master=self, width=220, placeholder_text='Database')
-#         self.database.grid(row=3, column=0,  padx=15, pady=5, sticky="ns")
-
-#         self.key=ctk.CTkEntry(master=self, width=220, placeholder_text='Key')
-#         self.key.grid(row=4, column=0,  padx=15, pady=5, sticky="ns")
-
-
-#     pass

@@ -12,12 +12,12 @@ class WeighingConnection(serial.Serial):
                 data_dict['date']= record[0].decode('utf-8').split(' ')[-1].strip('\r\n')
                 data_dict['time'] = record[1].decode('utf-8').split(' ')[-1].strip('\r\n')
                 data_dict['gross']=  float(record[2].decode('utf-8').split(' ')[-1].strip('\r\n').split('kg')[0])
-
                 return  data_dict
                     
         except KeyboardInterrupt:
             print("Closing the serial port.")
             self.close()
+
 
 
 class WeighingScaleConnection():
@@ -36,8 +36,3 @@ class WeighingScaleConnection():
             print('no device connected')
         
         return connection
-
-
-# con = WeighingScaleConnection().connection
-# print(con)
-# print(con.get_data())

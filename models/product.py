@@ -1,7 +1,6 @@
 
 
 class  ProductModel():
-
     def __init__(self, db=None):
         self.db = db
 
@@ -12,9 +11,7 @@ class  ProductModel():
                         INNER JOIN PRODUCT_LOCATION AS PL ON P.ID = PL.PRODUCT_ID\
                         INNER JOIN STOCK_LOCATION AS SL ON PL.STOCK_LOCATION_ID = SL.ID AND\
                         SL.ODOO_ID = {};'.format(location_id))
-        
         return cursor.fetchall()
-    
 
 
     def get_product_locations(self, product_odoo_id):
@@ -46,7 +43,7 @@ class  ProductModel():
         data = cursor.execute(query).fetchall()
         cursor.close()
         return data
-        
+
 
     def create_query(self, data):
         cursor = self.db.cursor()
@@ -56,27 +53,23 @@ class  ProductModel():
         self.db.commit()
         cursor.close()
         return id
-    
+
 
     def delete_not_in_query(self, ids):
         cursor = self.db.cursor()
         delete_query = 'DELETE FROM PRODUCT\
                         WHERE ODOO_ID NOT IN ('+ids+');'
-
         cursor.execute(delete_query)
         self.db.commit()
         cursor.close()
+
 
     def delete_all_query(self):
         cursor = self.db.cursor()
         delete_query = 'DELETE FROM PRODUCT;'
-
         cursor.execute(delete_query)
         self.db.commit()
         cursor.close()
-
-
-
 
 
 
@@ -94,6 +87,7 @@ class ProductLocationModel():
         cursor.close()
         return id
 
+
     def delete(self, product_odoo_id, location_odoo_id):
         cursor = self.db.cursor()
         delete_query = 'DELETE FROM PRODUCT_LOCATION AS PL\
@@ -103,6 +97,7 @@ class ProductLocationModel():
         cursor.execute(delete_query)
         self.db.commit()
         cursor.close()
+
 
     def delete_all(self):
         cursor = self.db.cursor()

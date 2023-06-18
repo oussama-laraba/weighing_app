@@ -9,7 +9,6 @@ from templates.scrollable_list_frame import ScrollableListFrame
 
 
 class ProductView(ctk.CTkFrame):
-
     def __init__(self, master, buttons=None, **kwargs ):
         super().__init__(master, **kwargs)
 
@@ -18,7 +17,6 @@ class ProductView(ctk.CTkFrame):
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
         self.grid_columnconfigure(3, weight=0)
-
 
         self.product_title = ctk.CTkLabel(master=self, text="Liste des Produits stockable", fg_color="white")
         self.product_title.grid(row=0, column=0,  padx=15, pady=5, sticky="w")
@@ -30,18 +28,11 @@ class ProductView(ctk.CTkFrame):
         self.location = ctk.CTkOptionMenu(self, values=[],
                                                 width=250,)
         self.location.grid(row=0, column=2, padx=15, pady=5, sticky="nsew")
-        
-
 
         self.refresh_button = ctk.CTkButton(master=self, text="Refresher")
         self.refresh_button.grid(row=0, column=3, padx=15, pady=5, sticky="w")
-        # tk_textbox = tk.Text(self, highlightthickness=0)
-        # tk_textbox.grid(row=0, column=0, sticky="nsew")
 
         self.product_list = ScrollableListFrame(master=self,\
                             labels={'id_odoo': 300, 'Produit': 400},\
                             buttons=buttons)
-        # tk_textbox.configure(yscrollcommand=self.product_list.set)
-
-
         self.product_list.grid(row=1, column=0, columnspan=4,  padx=15, sticky="nsew")

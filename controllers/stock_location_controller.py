@@ -2,7 +2,6 @@ import sys
 
 # setting path
 sys.path.append('../weighing')
-from templates.scrollable_list_frame import ScrollableListFrame
 from views.stock_location_view import StockLocationView
 from models.stock_location import StockLocationModel
 
@@ -10,14 +9,13 @@ from models.stock_location import StockLocationModel
 
 class StockLocationController():
     def __init__(self, view_master= None, db=None, api=None, columns= None, refresh_db_function= None):
-
         self.columns= columns
         self.model= StockLocationModel(db=db)
         self.api = api
         self.view_master= view_master
         self.stock_location_frame = self.get_view()
         self.refresh_db_function = refresh_db_function
-        
+
 
     def create(self, data):
         id = self.model.create_query(data)
@@ -40,28 +38,8 @@ class StockLocationController():
         
     
     def refresh(self):
-        # # get stock location from odoo api
-        # stock_location = self.api.get_locations(['id','location_id' , 'company_id', 'display_name'])
-
-        # # get all stock location ids from sqlite database
-        # db_ids= self.model.select_query(columns=['ODOO_ID'])
-
-        # db_ids_dict = {}
-        # db_ids = list(map(lambda x: db_ids_dict.update({str(x[0]): 1}), db_ids))
-        
-        # # string have all
-        # stock_location_ids = ''
-        # for rec in stock_location:
-        #     stock_location_ids += str(rec['id'])+','
-        #     data = {}
-        #     if not db_ids_dict.get(str(rec['id'])):
-        #         data= {'ODOO_ID': rec['id'], 'LOCATION': rec['display_name'], 'COMPANY_ID': rec['company_id']}
-        #         self.model.create_query(data)
-        # stock_location_ids = stock_location_ids[:-1]
-        # self.model.delete_query(stock_location_ids)
         self.refresh_db_function()
         self.initialize_view(self.stock_location_frame)
-        pass
 
 
     def initialize_view(self, stock_location_view):
@@ -74,4 +52,3 @@ class StockLocationController():
 
             color, fg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
             stock_location_view.stock_location_list.create_elements(instance_dict, color, fg_color)
-        #server_view.server_list.server_initialize(data)

@@ -1,6 +1,4 @@
 import sqlite3
-import os
-import psutil
 
 
 class DbConnection():
@@ -11,12 +9,7 @@ class DbConnection():
     def database_connection(self):
         try:
             sqliteConnection = sqlite3.connect('weighing.db')
-            cursor = sqliteConnection.cursor()
             print("Database created and Successfully Connected to SQLite")
-
-            sqlite_select_Query = "select sqlite_version();"
-            cursor.execute(sqlite_select_Query)
-            record = cursor.fetchall()
             return sqliteConnection
 
         except sqlite3.Error as   error:
