@@ -175,3 +175,8 @@ class LotFrame(customtkinter.CTkFrame):
         self.lot_list.grid(row=1, column=0, columnspan=2,  padx=15, sticky="nsew")
         self.lot_list.lot_initialize()
 
+
+
+class  LotModel():
+    def __init__(self, db=None):
+        self.db = db
