@@ -1,4 +1,3 @@
-import threading
 
 import tkinter as tk
 import customtkinter
@@ -11,6 +10,7 @@ from controllers.server_controller import SeverController
 from controllers.user_controller import UserController
 from controllers.stock_location_controller import StockLocationController
 from controllers.product_controller import ProductController
+from controllers.lot_controller import LotController
 from controllers.main_controller import MainController
 
 from helper.refresh_db import Refresh
@@ -156,7 +156,7 @@ class App2(customtkinter.CTk):
                 self.main_frame.destroy()
 
         if name == "lot":
-            self.lot_frame = LotFrame(master=self, db=self.db, fg_color='white')
+            self.lot_frame = LotController(view_master = self, db=self.db, api=self.api).lot_frame
             self.lot_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
             if self.lot_frame:
