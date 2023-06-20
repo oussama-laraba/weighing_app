@@ -8,8 +8,8 @@ import customtkinter as ctk
 import threading
 import datetime
 from views.main_view import MainView
-from models.product import  ProductLocationModel
-from models.stock_location import StockLocationModel
+from models.location import LocationModel
+from models.product import StockLocationModel
 import helper.bar_code as brc
 from helper.weighing import WeighingScaleConnection
 
@@ -20,8 +20,8 @@ class MainController():
         self.db = db
         self.api = api
         self.view_master= view_master
+        self.stock_location_model = LocationModel(db=db)
         self.stock_location_model = StockLocationModel(db=db)
-        self.product_location_model = ProductLocationModel(db=db)
         self.company_values = []
         self.location_values_id = {'NO EMPLACEMENTS':0,}
         self.product_id_values_quantity = []

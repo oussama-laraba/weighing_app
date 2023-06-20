@@ -9,30 +9,34 @@ class ServerModel():
         query= 'SELECT'
         for column in columns:
             query+= ' '+column+' ,'
-        query = query[:-1] + ' FROM SERVER'
-        
+        query = query[:-1] + ' FROM server'
+        print(conditions)
         if conditions:
             query+= ' WHERE'
             for condition in conditions.items():
-                query+= '  '+condition[0].upper()+' = "'+str(condition[1])+'" AND'
+                query+= '  '+condition[0]+' = "'+str(condition[1])+'" AND'
             query= query[:-3]
         query+=';'
-        data = cursor.execute(query).fetchall()
+        print(query , '\n')
+
+        cursor.execute(query)
+        records = cursor.fetchall()
         cursor.close()
-        return data
+        return records
 
 
     def create_query(self, data):
         cursor = self.db.cursor()
         
-        id = cursor.execute('INSERT INTO SERVER\
-                    (URL, PORT, DATABASE, KEY)\
-                    VALUES ("{}", {}, "{}", "{}");'.format(
-                        data.get('URL'),
-                        data.get('PORT'),
-                        data.get('DATABASE'),
-                        data.get('KEY')
-                    )).lastrowid
+        cursor.execute('INSERT INTO server\
+                    (URL, PORT, DATABASE_NAME)\
+                    VALUES ("{}", {}, "{}");'.format(
+                        data.get('url'),
+                        data.get('port'),
+                        data.get('database'),
+                    ))
+        id = cursor.lastrowid
+        print(id)
         cursor.close()
         self.db.commit()
         return id
@@ -41,13 +45,12 @@ class ServerModel():
     def update_query(self, data):
         cursor = self.db.cursor()
         cursor.execute('UPDATE SERVER SET\
-                        URL = "{}" , PORT = {}, DATABASE = "{}", KEY = "{}"\
-                        WHERE ID = {};'.format(
-                            data.get('URL'),
-                            data.get('PORT'),
-                            data.get('DATABASE'),
-                            data.get('KEY'),
-                            data.get('ID')
+                        URL = "{}" , PORT = {}, DATABASE_NAME = "{}"\
+                        WHERE id = {};'.format(
+                            data.get('url'),
+                            data.get('port'),
+                            data.get('database'),
+                            data.get('id')
                         ))
         cursor.close()
         self.db.commit()

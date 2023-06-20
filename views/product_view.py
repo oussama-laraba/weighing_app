@@ -33,6 +33,6 @@ class ProductView(ctk.CTkFrame):
         self.refresh_button.grid(row=0, column=3, padx=15, pady=5, sticky="w")
 
         self.product_list = ScrollableListFrame(master=self,\
-                            labels={'id_odoo': 300, 'Produit': 400},\
+                            labels={'id_odoo': 100, 'Produit': 400, 'Type de suivi': 400},\
                             buttons=buttons)
         self.product_list.grid(row=1, column=0, columnspan=4,  padx=15, sticky="nsew")

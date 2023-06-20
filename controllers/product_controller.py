@@ -4,8 +4,8 @@ import sys
 sys.path.append('../weighing')
 
 from views.product_view import ProductView
-from models.product import ProductModel, ProductLocationModel
-from models.stock_location import StockLocationModel
+from models.product import ProductModel, StockLocationModel
+from models.location import LocationModel
 
 
 
@@ -14,8 +14,8 @@ class ProductController():
         self.columns= columns
         self.api = api
         self.model= ProductModel(db=db)
+        self.location_model = LocationModel(db=db)
         self.stock_location_model = StockLocationModel(db=db)
-        self.product_location_model = ProductLocationModel(db=db)
         self.view_master= view_master
         self.location_values_id = {}
         self.product_frame = self.get_view()
@@ -32,7 +32,7 @@ class ProductController():
 
 
     def location_load(self, product_view):
-        location_id = self.stock_location_model.select_query(columns=['ODOO_ID','LOCATION'])
+        location_id = self.location_model.select_query(columns=['odoo_id','location_name'])
         self.location_values_id = { location[1]:location[0] for location in location_id }
         locations = list(self.location_values_id.keys())
         

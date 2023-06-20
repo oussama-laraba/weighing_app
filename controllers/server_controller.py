@@ -1,8 +1,10 @@
 import sys
 
+
 # setting path
 sys.path.append('../weighing')
 from views.server_view import ServerView, CreateUpdateServer
+from templates.scrollable_list_frame import DeleteConfirmation
 from models.server import ServerModel
 
 
@@ -29,18 +31,16 @@ class SeverController():
         if not validation_text:
             data = {}
             
-            data['ID'] = element.server.id if element.edit else None
-            data['URL'] = element.url.get().strip()
-            data['PORT'] = int(element.port.get())
-            data['DATABASE'] = element.database.get().strip()
-            data['KEY'] = element.key.get().strip()
+            data['id'] = element.server.id if element.edit else None
+            data['url'] = element.url.get().strip()
+            data['port'] = int(element.port.get())
+            data['database'] = element.database.get().strip()
             element.button(data)
 
             if element.edit:
                 element.server.data_dict.get('url').configure(text = element.url.get())
                 element.server.data_dict.get('port').configure(text = element.port.get())
                 element.server.data_dict.get('database').configure(text = element.database.get())
-                element.server.data_dict.get('key').configure(text = element.key.get())
             element.destroy()
 
         else: 
@@ -52,14 +52,10 @@ class SeverController():
 
     def create(self, data):
         id = self.model.create_query(data)
-        keys = list(data.keys())
-        for key in keys:
-            data[key.casefold()]= data.get(key)
-            data.pop(key)
 
         data['id'] = id
         color, bg_color = ('green','#e0e0e0') if len(self.server_frame.server_list.frame_list)%2 == 1 else ('blue violet','#C0C0C0')
-
+        
         self.server_frame.server_list.create_elements(data, color, bg_color)
 
 
@@ -68,23 +64,23 @@ class SeverController():
 
 
     def form_validation(self, element):
-        if '' in [element.url.get().strip(), element.port.get().strip(), element.database.get().strip(), element.key.get().strip()]:
+        if '' in [element.url.get().strip(), element.port.get().strip(), element.database.get().strip()]:
             return 'Vous devez remplir tous le formulaire'
         
         if not element.port.get().isnumeric():
             return 'Le port doit etre un entier positive'
         
-        check_duplicate_condition = {'url': element.url.get().strip(),\
-                                    'port': element.port.get().strip(),\
-                                    'database': element.database.get().strip(),\
-                                    'key': element.key.get().strip(),\
-                                    }
         
-        records = self.model.select_query(columns=['ID'], conditions = check_duplicate_condition)
+        check_duplicate_condition = {'url': element.url.get().strip(),
+                                    'port': element.port.get().strip(),
+                                    'database_name': element.database.get().strip(),
+                                    }
+        print(check_duplicate_condition)
+        records = self.model.select_query(columns=['id'], conditions = check_duplicate_condition)
 
         # if the record who have the same conf it's not the same
-        if len(records) > 1 or (len(records) == 1 and (element.id,) not in records):
-            return 'Cette enregistrement il exist déja '
+        if len(records) >= 1 or (len(records) == 1 and (element.server.id) not in records):
+            return 'Cette enregistrement existe déja '
 
         return None
 
@@ -110,7 +106,7 @@ class SeverController():
     def initialize_view(self, server_view):
         data = self.model.select_query('*')
         for idx,instance in enumerate(data):
-            instance_dict = {'id': instance[0],'url': instance[1], 'port':instance[2], 'database':instance[3], 'key': instance[4]}
+            instance_dict = {'id': instance[0],'url': instance[1], 'port':instance[2], 'database':instance[3]}
 
             color, fg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
             server_view.server_list.create_elements(instance_dict, color, fg_color)

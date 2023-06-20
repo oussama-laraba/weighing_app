@@ -23,7 +23,7 @@ class ServerView(ctk.CTkFrame):
         self.add_button.grid(row=0, column=1, padx=15, pady=5, sticky="ns")
 
         self.server_list = ScrollableListFrame(master=self,\
-                            labels={'url': 100, 'port': 50, 'database': 100, 'key': 400},\
+                            labels={'url': 100, 'port': 50, 'database': 100},\
                             buttons=buttons)
         self.server_list.grid(row=1, column=0, columnspan=2,  padx=15, sticky="nsew")
 
@@ -58,15 +58,12 @@ class CreateUpdateServer(tk.Tk):
         self.database=ctk.CTkEntry(master=self, width=220, placeholder_text='Database')
         self.database.grid(row=3, column=0,  padx=15, pady=5, sticky="ns")
 
-        self.key=ctk.CTkEntry(master=self, width=220, placeholder_text='Key')
-        self.key.grid(row=4, column=0,  padx=15, pady=5, sticky="ns")
 
         if self.server:
             self.id = self.server.id
             self.url.insert(0,self.server.data_dict.get('url').cget('text'))
             self.port.insert(0,self.server.data_dict.get('port').cget('text'))
             self.database.insert(0,self.server.data_dict.get('database').cget('text'))
-            self.key.insert(0,self.server.data_dict.get('key').cget('text'))
             pass
 
         self.validation_text =ctk.CTkLabel(master=self, text='', font=('Century Gothic bold',15), text_color='red')

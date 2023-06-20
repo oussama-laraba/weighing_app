@@ -6,9 +6,9 @@ sys.path.append('../weighing')
 import tkinter as tk
 import customtkinter as ctk
 from templates.scrollable_list_frame import ScrollableListFrame
-from models.stock_location import StockLocationModel
+from models.location import LocationModel
 
-class StockLocationView(ctk.CTkFrame):
+class LocationView(ctk.CTkFrame):
     def __init__(self, master, buttons=None, **kwargs ):
         super().__init__(master, **kwargs)
 
@@ -22,6 +22,6 @@ class StockLocationView(ctk.CTkFrame):
         self.refresh_button.grid(row=0, column=1, padx=15, pady=5, sticky="ns")
 
         self.stock_location_list = ScrollableListFrame(master=self,\
-                            labels={'id_odoo': 50, 'Emplacement': 400, 'Entreprise': 100},\
+                            labels={'id_odoo': 50, 'emplacement': 400, 'entreprise': 100},\
                             buttons=buttons)
         self.stock_location_list.grid(row=1, column=0, columnspan=2,  padx=15, sticky="nsew")

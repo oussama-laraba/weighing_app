@@ -6,11 +6,12 @@ class UserModel():
 
     def get_data(self):
         cursor = self.db.cursor()
-        users = cursor.execute('SELECT U.ID, U.EMAIL, U.PASSWORD, S.URL, U.COMPANY\
-                        FROM USER as U\
-                        INNER JOIN  SERVER as S ON U.URL_ID = S.ID').fetchall()
+        cursor.execute('SELECT U.id, U.email, U.password, S.url\
+                        FROM user as U\
+                        INNER JOIN  server as S ON U.server_id = S.id')
+        records = cursor.fetchall()
         cursor.close()
-        return users
+        return records
 
 
     def select_query(self, columns='*', conditions= None):
@@ -26,21 +27,22 @@ class UserModel():
                 query+= '  '+condition[0].upper()+' = "'+str(condition[1])+'" AND'
             query= query[:-3]
         query+=';'
-        data = cursor.execute(query).fetchall()
+        cursor.execute(query)
+        records= cursor.fetchall()
         cursor.close()
-        return data
+        return records
 
 
     def create_query(self, data):
         cursor = self.db.cursor()
-        id = cursor.execute('INSERT INTO USER \
-                    (EMAIL, PASSWORD, URL_ID, COMPANY)\
-                    VALUES ("{}", "{}", "{}", "{}");'.format(
-                        data.get('EMAIL'),
-                        data.get('PASSWORD'),
-                        data.get('URL_ID'),
-                        data.get('COMPANY')
-                    )).lastrowid
+        cursor.execute('INSERT INTO USER \
+                    (email, password, server_id)\
+                    VALUES ("{}", "{}", "{}");'.format(
+                        data.get('email'),
+                        data.get('password'),
+                        data.get('server_id')
+                    ))
+        id = cursor.lastrowid
         cursor.close()
         self.db.commit()
         return id
@@ -49,13 +51,12 @@ class UserModel():
     def update_query(self, data):
         cursor = self.db.cursor()
         cursor.execute('UPDATE USER SET\
-                        EMAIL = "{}" , PASSWORD = "{}", URL_ID = {}, COMPANY = "{}"\
-                        WHERE ID = {};'.format(
-                            data.get('EMAIL'),
-                            data.get('PASSWORD'),
-                            data.get('URL_ID'),
-                            data.get('COMPANY'),
-                            data.get('ID')
+                        email = "{}" , password = "{}", server_id = {}\
+                        WHERE id = {};'.format(
+                            data.get('email'),
+                            data.get('password'),
+                            data.get('server_id'),
+                            data.get('id')
                         ))
         print('user update')
         cursor.close()
@@ -64,6 +65,6 @@ class UserModel():
 
     def delete_query(self, id):
         cursor = self.db.cursor()
-        cursor.execute(f'DELETE FROM USER WHERE ID = {id};')
+        cursor.execute(f'DELETE FROM USER WHERE id = {id};')
         cursor.close()
         self.db.commit()

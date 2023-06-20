@@ -30,18 +30,16 @@ class UserController():
         validation_text = self.form_validation(element)
         if not validation_text:
             data = {}
-            data['ID'] = element.user.id if element.user else None
-            data['EMAIL'] = element.email.get().strip()
-            data['PASSWORD'] = element.password.get().strip()
-            data['URL_ID'] = int(element.url_id)
-            data['COMPANY'] = element.company.get().strip()
+            data['id'] = element.user.id if element.user else None
+            data['email'] = element.email.get().strip()
+            data['password'] = element.password.get().strip()
+            data['server_id'] = int(element.server_id)
             element.button(data)
 
             if element.user:
                 element.user.data_dict.get('email').configure(text = element.email.get())
                 element.user.data_dict.get('password').configure(text = ''.join('*' for _ in range(len(element.password.get()))))
-                element.user.data_dict.get('url_id').configure(text = element.url_names.get())
-                element.user.data_dict.get('company').configure(text = element.company.get())
+                element.user.data_dict.get('server_id').configure(text = element.server_names.get())
             
             
             self.view_master.api.api_connection = self.view_master.api.connect_api()
@@ -58,11 +56,6 @@ class UserController():
 
     def create(self, data):
         id = self.model.create_query(data)
-        keys = list(data.keys())
-        for key in keys:
-            data[key.casefold()]= data.get(key)
-            data.pop(key)
-
         data['id'] = id
         color, bg_color = ('green','#e0e0e0') if len(self.user_frame.user_list.frame_list)%2 == 1 else ('blue violet','#C0C0C0')
         self.user_frame.user_list.create_elements(data, color, bg_color)
@@ -73,21 +66,20 @@ class UserController():
 
 
     def form_validation(self, element):
-        if '' in [element.email.get().strip(), element.password.get().strip(), element.company.get().strip()]:
+        if '' in [element.email.get().strip(), element.password.get().strip()]:
             return 'Vous devez remplir tous le formulaire'
         
-        check_duplicate_condition = {'email': element.email.get().strip(),\
-                                    'password': element.password.get().strip(),\
-                                    'url_id': element.url_id,\
-                                    'company': element.company.get().strip(),\
+        check_duplicate_condition = {'email': element.email.get().strip(),
+                                    'password': element.password.get().strip(),
+                                    'server_id': element.server_id,
                                     }
         
-        records = self.model.select_query(columns=['ID'], conditions = check_duplicate_condition)
+        records = self.model.select_query(columns=['id'], conditions = check_duplicate_condition)
         # if the record who have the same conf it's not the same
         if len(records) > 1 or (len(records) == 1 and (element.id,) not in records):
             return 'Cette enregistrement il exist déja '
 
-        server_data = self.server_model.select_query(columns=['URL', 'PORT', 'DATABASE'], conditions = {'ID': element.url_id})[0]
+        server_data = self.server_model.select_query(columns=['url', 'port', 'database_name'], conditions = {'id': element.server_id})[0]
         connection_data = {'url':server_data[0]+':'+str(server_data[1]), 'db':server_data[2], 'user':element.email.get().strip(), 'key':element.password.get().strip()}
         print(connection_data)
         if not check_connection(connection_data):
@@ -119,7 +111,7 @@ class UserController():
         for idx,instance in enumerate(data):
             instance_dict = {'id': instance[0],'email': instance[1],
                             'password':''.join('*' for _ in range(len(instance[2]))),
-                            'url_id':instance[3], 'company': instance[4]}
+                            'server_id':instance[3]}
 
             color, fg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
             user_view.user_list.create_elements(instance_dict, color, fg_color)

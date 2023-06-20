@@ -11,9 +11,7 @@ SHOW TABLES;  -- return all the table of the database;
 
 CREATE TABLE uom (
     id INT  NOT NULL  AUTO_INCREMENT,
-    odoo_id INT NOT NULL,
-    name VARCHAR(20),   
-
+    uom_name VARCHAR(20),   
     PRIMARY KEY (id),
     CONSTRAINT UNIQUE_UOM_NAME UNIQUE (name)
   
@@ -23,7 +21,7 @@ CREATE TABLE product (
     id INT  AUTO_INCREMENT  NOT NULL,
     odoo_id   INT NOT NULL,
     product_name  VARCHAR(255) NOT NULL,
-    product_follow_type VARCHAR(40) NOT NULL,
+    tracking VARCHAR(40) NOT NULL,
 
     PRIMARY KEY (id)
 );
@@ -84,6 +82,7 @@ CREATE TABLE server   (
 CREATE TABLE user   (
     id INT  NOT NULL  AUTO_INCREMENT,
     email VARCHAR(255) NOT NULL, 
+    password VARCHAR(255) NOT NULL,
     server_id INT NOT NULL , 
     PRIMARY KEY (id),
     FOREIGN KEY (server_id) REFERENCES server(id)
@@ -91,18 +90,22 @@ CREATE TABLE user   (
 
 CREATE TABLE stock_location    (
     server_id INT  NOT NULL,
-    user_id INT  NOT NULL,
     location_id INT  NOT NULL,
     product_id INT  NOT NULL,
     
     quantity INT ,
      
-    PRIMARY KEY (server_id,user_id, location_id, product_id),
-    FOREIGN KEY (user_id) REFERENCES user(id),
+    PRIMARY KEY (server_id, location_id, product_id),
     FOREIGN KEY (server_id) REFERENCES server(id),
     FOREIGN KEY (location_id) REFERENCES location(id),
     FOREIGN KEY (product_id) REFERENCES product(id)
-    
 );
 
 
+CREATE TABLE user_location (
+    user_id INT  NOT NULL,
+    location_id INT  NOT NULL,
+    PRIMARY KEY (user_id, location_id),
+    FOREIGN KEY (user_id) REFERENCES user(id),
+    FOREIGN KEY (location_id) REFERENCES location(id)
+);

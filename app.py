@@ -8,7 +8,7 @@ from models.lot import LotFrame
 
 from controllers.server_controller import SeverController
 from controllers.user_controller import UserController
-from controllers.stock_location_controller import StockLocationController
+from controllers.location_controller import LocationController
 from controllers.product_controller import ProductController
 from controllers.lot_controller import LotController
 from controllers.main_controller import MainController
@@ -114,17 +114,25 @@ class App2(customtkinter.CTk):
         self.db = DbConnection().db
         self.api = ApiConnection(db=self.db)
         self.refresher = Refresh(api= self.api, db= self.db)
-    
-        self.server_frame = None
+        ###
+        
+        self.stockable_product_frame = ProductController(view_master=self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh_product).product_frame
+        self.stockable_product_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
+        
+        ###
         self.user_frame = None
+        self.server_frame = None
         self.lot_frame = None
         self.stock_location_frame = None
-        self.stockable_product_frame = None
         
-        self.main_controller = MainController(view_master=self, db=self.db, api=self.api)
-        self.main_frame = self.main_controller.main_frame
-        self.main_frame.grid(row=1, column=1, sticky="nsew")
-        self.main_controller.open_thread()
+        self.main_controller = None
+        self.main_frame = None
+
+        
+        # self.main_controller = MainController(view_master=self, db=self.db, api=self.api)
+        # self.main_frame = self.main_controller.main_frame
+        # self.main_frame.grid(row=1, column=1, sticky="nsew")
+        # self.main_controller.open_thread()
 
 
     def close_main_frame(self):
@@ -205,7 +213,7 @@ class App2(customtkinter.CTk):
         self.close_product_frames()
 
         if name == "location":
-            self.stock_location_frame = StockLocationController(view_master = self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh_location).stock_location_frame
+            self.stock_location_frame = LocationController(view_master = self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh_location).stock_location_frame
             self.stock_location_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
             if self.stock_location_frame:

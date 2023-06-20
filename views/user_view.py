@@ -24,7 +24,7 @@ class UserView(ctk.CTkFrame):
         self.add_button.grid(row=0, column=1, padx=15, pady=5, sticky="ns")
 
         self.user_list = ScrollableListFrame(master=self,\
-                            labels={'email': 200, 'password': 200, 'url_id': 200, 'company': 200},\
+                            labels={'email': 200, 'password': 200, 'server_id': 200},\
                             buttons=buttons)
         self.user_list.grid(row=1, column=0, columnspan=2,  padx=15, sticky="nsew")
 
@@ -60,28 +60,25 @@ class CreateUpdateUser(tk.Tk):
         self.password.grid(row=2, column=0,  padx=15, pady=5, sticky="ns")
 
 
-        self.url_id_names = self.server_model.select_query(columns=['ID','URL'])
-        self.url_names = ctk.CTkOptionMenu(self,width=220,fg_color='white',
+        self.server_id_names = self.server_model.select_query(columns=['ID','URL'])
+        self.server_names = ctk.CTkOptionMenu(self,width=220,fg_color='white',
                                                     text_color="black",
                                                     text_color_disabled="grey",
                                                     button_color="white",
                                                     button_hover_color="white",
-                                                    values= list(map(lambda x:x[1], self.url_id_names)),
-                                                                command=self.change_url)
-        self.url_names.grid(row=3, column=0,  padx=15, pady=5, sticky="ns")
-        self.url_names.set(self.url_id_names[0][1])
-        #self.url_id=customtkinter.CTkEntry(master=self, width=220, placeholder_text='url_id')
-        self.url_id = self.url_id_names[0][0]
+                                                    values= list(map(lambda x:x[1], self.server_id_names)),
+                                                                command=self.change_server)
+        self.server_names.grid(row=3, column=0,  padx=15, pady=5, sticky="ns")
+        self.server_names.set(self.server_id_names[0][1])
+        #self.server_id=customtkinter.CTkEntry(master=self, width=220, placeholder_text='server_id')
+        self.server_id = self.server_id_names[0][0]
 
-        self.company=ctk.CTkEntry(master=self, width=220, placeholder_text='Entreprise')
-        self.company.grid(row=4, column=0,  padx=15, pady=5, sticky="ns")
 
         if self.user:
             self.id = self.user.id
             self.email.insert(0,self.user.data_dict.get('email').cget('text'))
             #self.password.insert(0,self.user.data_dict.get('password').cget('text'))
-            self.url_names.set(self.user.data_dict.get('url_id').cget('text'))
-            self.company.insert(0,self.user.data_dict.get('company').cget('text'))
+            self.server_names.set(self.user.data_dict.get('server_id').cget('text'))
             pass
 
         self.validation_text =ctk.CTkLabel(master=self, text='', font=('Century Gothic bold',15), text_color='red')
@@ -94,6 +91,6 @@ class CreateUpdateUser(tk.Tk):
         create_edit_function(self)
 
 
-    def change_url(self,name):
-        id = list(filter(lambda x: x[1] == name,self.url_id_names))[0][0]
-        self.url_id = id
+    def change_server(self,name):
+        id = list(filter(lambda x: x[1] == name,self.server_id_names))[0][0]
+        self.server_id = id

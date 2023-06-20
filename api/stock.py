@@ -4,7 +4,7 @@ import sys
 sys.path.append('../weighing')
 
 from api.odoo_api import *
-from models.database_connection import DbConnection
+
 
 
 # url = 'http://192.168.1.98:8069'
@@ -19,13 +19,16 @@ class ApiConnection():
 
     def __init__(self, db=None):
         self.db = db
+        self.user_id= None
+        self.server_id= None
         self.api_connection = self.connect_api()
+
 
     def connect_api(self):
         print('api connection')
         cursor = self.db.cursor()
-        cursor.execute('SELECT S.*, U.EMAIL, U.PASSWORD FROM SERVER AS S, USER AS U\
-                        WHERE U.URL_ID = S.ID')
+        cursor.execute('SELECT S.*, U.id, U.email, U.password FROM server AS S, user AS U\
+                        WHERE U.server_id = S.id')
         possible_connection = cursor.fetchall()
         cursor.close()
         for connection in possible_connection:
@@ -37,6 +40,8 @@ class ApiConnection():
 
             try:
                 con = OdooStockapi(url, db, user, key)
+                self.server_id = connection[0]
+                self.user_id = connection[4]
                 return con    
             except OSError : 
                 print("odoo server connection problem")
@@ -58,23 +63,34 @@ class ApiConnection():
 
         print('api call get_stockable_product')
         try: 
-            stockable_products = self.api_connection.get_stockable_products_records(fields=['id','name'])
-            product_location = self.api_connection.get_stock_locations(fields = ['id','location_id','product_id','quantity','product_uom_id','company_id'])
+            stockable_products = self.api_connection.get_stockable_products_records(fields=['id','name','uom_id','tracking'])
+            product_location = self.api_connection.get_stock_locations(fields = ['id','location_id','product_id','quantity','company_id'])
+            
+            
             product_loc = {}
             for loc in product_location:
 
                 if product_loc.get(loc['product_id'][0]):
-                    product_loc[loc['product_id'][0]].append(loc['location_id'][0])
+                    product_loc[loc['product_id'][0]]['location_id'].append(loc['location_id'][0])
+                    product_loc[loc['product_id'][0]]['quantity'].append(loc['quantity'])
                 else:
-                    product_loc[loc['product_id'][0]] =  [loc['location_id'][0]]
+                    product_loc[loc['product_id'][0]]= {}
+                    product_loc[loc['product_id'][0]]['location_id'] =  [loc['location_id'][0]]
+                    product_loc[loc['product_id'][0]]['quantity'] =  [loc['quantity']]
 
 
             product_dict = {}
             product_list = []
             for product in stockable_products:
-                product_dict.update({str(product['id']): product['name']})
-                product_list.append({'id': product['id'], 'name': product['name'], 'location_id': product_loc.get(product['id'])})
-
+                if product_loc.get(product['id']):
+                    product_dict.update({str(product['id']): product['name']})
+                    product_list.append({'id': product['id'], 'name': product['name'], 'location_id': product_loc.get(product['id']).get('location_id'),
+                                        'quantity':product_loc.get(product['id']).get('quantity'), 'uom_id':product.get('uom_id')[1],
+                                        'tracking':product.get('tracking')})
+                else:
+                    product_list.append({'id': product['id'], 'name': product['name'], 'location_id': [],
+                                        'quantity':0, 'uom_id':product.get('uom_id')[1],
+                                        'tracking':product.get('tracking')})
             return product_list
         except: 
             print('Access Denied')
@@ -131,31 +147,41 @@ def check_connection(data):
 #         return None
 
 
-# def get_stockable_product(con, fields = [] ):
+def get_stockable_product(con, fields = [] ):
 
-#     try: 
-#         stockable_products = con.get_stockable_products_records(fields=['id','name'])
-#         product_location = con.get_stock_locations(fields = ['id','location_id','product_id','quantity','product_uom_id','company_id'])
-#         product_loc = {}
-#         for loc in product_location:
+    # try: 
+        stockable_products = con.get_stockable_products_records(fields=['id','name','uom_id','tracking'])
+        product_location = con.get_stock_locations(fields = ['id','location_id','product_id','quantity','company_id'])
+        
+        product_loc = {}
+        for loc in product_location:
 
-#             if product_loc.get(loc['product_id'][0]):
-#                 product_loc[loc['product_id'][0]].append(loc['location_id'][0])
-#             else:
-#                 product_loc[loc['product_id'][0]] =  [loc['location_id'][0]]
+            if product_loc.get(loc['product_id'][0]):
+                product_loc[loc['product_id'][0]]['location_id'].append(loc['location_id'][0])
+                product_loc[loc['product_id'][0]]['quantity'].append(loc['quantity'])
+            else:
+                product_loc[loc['product_id'][0]]= {}
+                product_loc[loc['product_id'][0]]['location_id'] =  [loc['location_id'][0]]
+                product_loc[loc['product_id'][0]]['quantity'] =  [loc['quantity']]
 
 
-#         product_dict = {}
-#         product_list = []
-#         for product in stockable_products:
-#             product_dict.update({str(product['id']): product['name']})
-#             product_list.append({'id': product['id'], 'name': product['name'], 'location_id': product_loc.get(product['id'])})
+        product_dict = {}
+        product_list = []
+        for product in stockable_products:
+            if product_loc.get(product['id']):
+                product_dict.update({str(product['id']): product['name']})
+                product_list.append({'id': product['id'], 'name': product['name'], 'location_id': product_loc.get(product['id']).get('location_id'),
+                                    'quantity':product_loc.get(product['id']).get('quantity'), 'uom_id':product.get('uom_id')[1],
+                                    'tracking':product.get('tracking')})
+            else:
+                product_list.append({'id': product['id'], 'name': product['name'], 'location_id': [],
+                                    'quantity':0, 'uom_id':product.get('uom_id')[1],
+                                    'tracking':product.get('tracking')})
+        return product_list
+    # except: 
+    #     print('Access Denied')
 
-#         return product_list
-#     except: 
-#         print('Access Denied')
-
-#     return None
+        return None
 
 # url  = 'http://demo.dzexpert.com'+':8069'
 # db =  'ODOO11_TEST'
@@ -163,16 +189,16 @@ def check_connection(data):
 
 # url = 'http://192.168.1.98'+':8069'
 # db =  'bilbao_test_2'
-#key = connection[4]
 # key= '123456'
 # user = 'admin@dzexpert.com'
+
 # print('\n\n\n\n')
 # print(len(key))
 # print(url+' '+db+' '+user+' '+key)
 # print('\n\n\n\n')
 
 # con = OdooStockapi(url, db, user, key)
-# # print(get_stockable_product(con))
+# print(get_stockable_product(con))
 # # print(con.get_stock_locations(location_id=126))
 
 # print('\n\n\n\n')
@@ -180,3 +206,4 @@ def check_connection(data):
 
 # #print(con.get_internal_locations_ids())
 # main_product_stock(con,12)
+# print(con.get_records(  'product.product', con.get_ids('product.product'))[0])

@@ -2,7 +2,7 @@ import sys
 sys.path.append('../weighing')
 from views.lot_view import LotView
 from models.lot import LotModel
-from models.stock_location import StockLocationModel
+from models.location import LocationModel
 from models.product import ProductModel
 
 
@@ -11,7 +11,7 @@ class LotController():
         self.columns= columns
         self.model= LotModel(db=db)
         self.api = api
-        self.stock_location_model= StockLocationModel(db=db)
+        self.stock_location_model= LocationModel(db=db)
         self.product_model= ProductModel(db=db)
         self.view_master= view_master
         self.location_values_id = {}

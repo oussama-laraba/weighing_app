@@ -53,15 +53,16 @@ class Instance(ctk.CTkFrame):
         self.grid(row=len(master.frame_list)+1, column=0, pady=(0, 10), sticky="nsew")
         self.data_dict = {}
         self.id = data['id']
-
+        
         data.pop('id')
         labels = list(master.labels.values())
-        for idx, data in enumerate(list(data.items()), start=0):
+        for idx, data_cell in enumerate(list(data.items()), start=0):
             self.grid_columnconfigure(idx, weight=1)
-            data_obj = ctk.CTkLabel(self, text=data[1], anchor="w", width=labels[idx], text_color=color)
+            data_obj = ctk.CTkLabel(self, text=data_cell[1], anchor="w", width=labels[idx], text_color=color)
             data_obj.grid(row=0, column=idx, pady=(5, 5), sticky="w")
-            self.data_dict[data[0]] = data_obj
+            self.data_dict[data_cell[0]] = data_obj
 
+        
         if master.buttons:
             idx += 1
             if master.buttons.get('edit'):
