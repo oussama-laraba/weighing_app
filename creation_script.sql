@@ -3,6 +3,7 @@
 -- go the mysql shell 
 \sql
 \connect root@localhost
+
 CREATE DATABASE weighing;
 \use weighing
 
@@ -13,8 +14,7 @@ CREATE TABLE uom (
     id INT  NOT NULL  AUTO_INCREMENT,
     uom_name VARCHAR(20),   
     PRIMARY KEY (id),
-    CONSTRAINT UNIQUE_UOM_NAME UNIQUE (name)
-  
+    CONSTRAINT UNIQUE_UOM_NAME UNIQUE (uom_name)
 );
 
 CREATE TABLE product (
@@ -89,14 +89,13 @@ CREATE TABLE user   (
 );
 
 CREATE TABLE stock_location    (
-    server_id INT  NOT NULL,
+
     location_id INT  NOT NULL,
     product_id INT  NOT NULL,
     
     quantity INT ,
-     
-    PRIMARY KEY (server_id, location_id, product_id),
-    FOREIGN KEY (server_id) REFERENCES server(id),
+    
+    PRIMARY KEY (location_id, product_id),
     FOREIGN KEY (location_id) REFERENCES location(id),
     FOREIGN KEY (product_id) REFERENCES product(id)
 );

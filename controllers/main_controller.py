@@ -8,7 +8,7 @@ import customtkinter as ctk
 import threading
 import datetime
 from views.main_view import MainView
-from models.location import LocationModel
+from models.location import LocationModel, CompanyModel
 from models.product import StockLocationModel
 import helper.bar_code as brc
 from helper.weighing import WeighingScaleConnection
@@ -20,11 +20,13 @@ class MainController():
         self.db = db
         self.api = api
         self.view_master= view_master
-        self.stock_location_model = LocationModel(db=db)
-        self.stock_location_model = StockLocationModel(db=db)
-        self.company_values = []
+        self.location_model = LocationModel(db=db)
+        self.company_model = CompanyModel(db=db)
+        self.company_values_id = {}
         self.location_values_id = {'NO EMPLACEMENTS':0,}
+        self.location_id= None
         self.product_id_values_quantity = []
+        self.product_id= None
         self.main_frame = self.get_view()
         self.thread = True
     
@@ -85,37 +87,43 @@ class MainController():
 
 
     def load_companies(self, main_view):
-        cursor = self.db.cursor()
-        companies = cursor.execute('SELECT DISTINCT COMPANY_ID FROM STOCK_LOCATION;').fetchall()
+        companies = self.company_model.get_data()
         if companies:
-            self.company_values = [company[0] for company in companies]
-            main_view.action_frame.company.configure(values=self.company_values)
-            main_view.action_frame.company.set(companies[0][0])
-        cursor.close()
+            self.company_values_id = {company[2]:company[0] for company in companies}
+            companies = list(self.company_values_id.keys())
+            main_view.action_frame.company.configure(values=companies)
+            main_view.action_frame.company.set(companies[0])
 
 
     def load_locations(self, main_view):
-        cursor = self.db.cursor()
-        id_location = cursor.execute('SELECT ODOO_ID, LOCATION FROM STOCK_LOCATION WHERE COMPANY_ID = "{}";'.format(main_view.action_frame.company.get())).fetchall()
+        id_location = self.location_model.select_query(columns=['odoo_id', 'location_name'], conditions={'company_id':self.company_values_id.get(main_view.action_frame.company.get())})
         if id_location:
             self.location_values_id = { location[1]:location[0] for location in id_location }
             locations = list(self.location_values_id.keys())
             main_view.action_frame.location.configure(values=locations)
             main_view.action_frame.location.set(locations[0])
-        cursor.close()
 
 
     def load_products(self, main_view):
+        
         if main_view.action_frame.location.get() != 'NO EMPLACEMENTS':
-            products = self.api.main_product_stock(self.location_values_id[main_view.action_frame.location.get()])
-            
+            products = self.api.get_stockable_product(location_id=self.location_values_id[main_view.action_frame.location.get()])
+            self.location_id = self.location_values_id.get(main_view.action_frame.location.get())
             if products:
-                self.product_id_values_quantity = [[ product['product_id'][0], product['product_id'][1],\
-                                                product['quantity'], product['product_uom_id'][1] ] for product in products]
+                product_list = []
+                for product in products:
+                    if product['tracking'] == 'lot':
+                        product_list.append([product['id'], product['name'],\
+                                                product['quantity'].get('to_use_quantity'),
+                                                product['uom_id']])
+                self.product_id_values_quantity = product_list
+                del product_list
                 #print(self.product_id_values_quantity)
                 product_values = [product[1] for product in self.product_id_values_quantity]
                 main_view.action_frame.product.configure(values=product_values)
                 main_view.action_frame.product.set(self.product_id_values_quantity[0][1])
+                self.product_id= self.product_id_values_quantity[0][0]
+
                 color = 'green' if self.product_id_values_quantity[0][2] > 0 else 'red'
                 main_view.action_frame.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,} {}'\
                                 .format(round(self.product_id_values_quantity[0][2], 2),self.product_id_values_quantity[0][3]).replace(',', ' '), text_color=color)
@@ -166,6 +174,8 @@ class MainController():
         
         for product in self.product_id_values_quantity:
             if product[1] == product_name:
+                print(product)
+                self.product_id= product[0]
                 color = 'green' if product[2] > 0 else 'red'
                 self.main_frame.action_frame.product_disponible_quantity_label.configure(text = 'Quantite disponible : {:,} {}'\
                         .format(round(product[2],2), self.product_id_values_quantity[0][3]).replace(',', ' '), text_color=color)
@@ -173,15 +183,24 @@ class MainController():
 
     def create_code_bar_button(self):
         if self.form_validation():
+            barcode_information = {'product_id':self.product_id,
+                                    'location_id':self.location_id,
+                                    'quantity':float(self.main_frame.action_frame.product_quantity.get()),
+                                    'quantity2':float(self.main_frame.action_frame.confirm_product_quantity.get()),
+                                    'information':self.main_frame.action_frame.extra_info.get('0.0', tk.END)}
+            
+            
+            
+            barcode = self.api.create_code_bar(barcode_information)
+            brc.gen_bar_code(barcode)
             brc.fill_html_templates(
                 self.main_frame.action_frame.product.get(),
-                '0000007',
+                barcode.split('#')[0][-6:],
                 self.main_frame.action_frame.product_quantity.get(),
                 self.main_frame.action_frame.product_disponible_quantity_label.cget('text').split(' ')[-1],
                 20,
                 self.main_frame.action_frame.extra_info.get('0.0', tk.END)
             )
-
             brc.gen_display_filled_template_snapshot()
             self.reset_button()
             invoice_image = ctk.CTkImage(Image.open(os.path.join('static/images', "display_filled_template.png")), size=(250, 500))

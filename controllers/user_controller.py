@@ -6,7 +6,7 @@ from templates.scrollable_list_frame import  DeleteConfirmation
 from views.user_view import UserView, CreateUpdateUser
 from models.user import UserModel
 from models.server import ServerModel
-from api.stock import check_connection
+from api.consume_api import check_connection
 
 
 class UserController():
@@ -43,8 +43,7 @@ class UserController():
             
             
             self.view_master.api.api_connection = self.view_master.api.connect_api()
-            self.view_master.refresher.refresh_location()
-            self.view_master.refresher.refresh_product()
+            self.view_master.refresher.refresh()
             element.destroy()
         
         else: 
@@ -62,6 +61,7 @@ class UserController():
 
 
     def edit(self, data):
+        print(data)
         self.model.update_query(data)
 
 

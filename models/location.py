@@ -8,7 +8,7 @@ class LocationModel():
     def get_data(self):
         cursor = self.db.cursor()
         cursor.execute('SELECT L.id, L.odoo_id, L.location_name, C.company_name FROM location as L\
-                       INNER JOIN  company as C ON C.id = L.company_id;')
+                        INNER JOIN  company as C ON C.id = L.company_id;')
         stock_location = cursor.fetchall()
         cursor.close()
         return stock_location
@@ -34,7 +34,17 @@ class LocationModel():
         return records
 
 
+    def get_location_id(self, location_odoo_id):
+        print('get_location_id location')
+        cursor = self.db.cursor()
+        get_id_query = 'SELECT id FROM location WHERE odoo_id = {}'.format(location_odoo_id)
+        cursor.execute(get_id_query)
+        records = cursor.fetchall()
+        cursor.close()
+        return records
+
     def create_query(self, data):
+        print('create location')
         cursor = self.db.cursor()
         create_query = 'INSERT INTO location (odoo_id, location_name, company_id)\
                                 VALUES ({},"{}","{}");'.format(data['odoo_id'], data['location_name'], data['company_id'])
@@ -45,7 +55,7 @@ class LocationModel():
         return id
 
 
-    def delete_query(self, ids):
+    def delete_not_in_query(self, ids):
         cursor = self.db.cursor()
         delete_query = 'DELETE FROM location\
                         WHERE ODOO_ID NOT IN ('+ids+');'
@@ -68,7 +78,7 @@ class CompanyModel():
     def get_company_id(self, odoo_id):
         cursor = self.db.cursor()
         cursor.execute('SELECT id FROM company WHERE odoo_id = {};'.format(odoo_id))
-        id = cursor.fetchall()[0][0]
+        id = cursor.fetchall()
         cursor.close()
         return id
 
@@ -91,4 +101,5 @@ class CompanyModel():
                         ))
         cursor.close()
         self.db.commit()
+        return None
     

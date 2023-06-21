@@ -81,5 +81,5 @@ def gen_display_filled_template_snapshot():
     filled_template_snapshot = images[0].crop((left, top, right, bottom))
     filled_template_snapshot.save(r'static/images/display_filled_template.png' )
 
-fill_html_templates('Bobine','00000007',1000,'Kg', 2000,'info supplementaireee ')
-gen_display_filled_template_snapshot()
+# fill_html_templates('Bobine','00000007',1000,'Kg', 2000,'info supplementaireee')
+# gen_display_filled_template_snapshot()

@@ -43,6 +43,7 @@ class LocationController():
             rec.destroy()
         stock_location_view.stock_location_list.frame_list = []
         data = self.model.get_data()
+        print('\n\n\n\n',self.api.server_id)
         for idx,instance in enumerate(data):
             instance_dict = {'id': instance[0],'id_odoo': instance[1], 'emplacement':instance[2], 'entreprise':instance[3]}
 

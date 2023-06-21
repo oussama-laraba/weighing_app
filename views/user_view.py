@@ -79,6 +79,8 @@ class CreateUpdateUser(tk.Tk):
             self.email.insert(0,self.user.data_dict.get('email').cget('text'))
             #self.password.insert(0,self.user.data_dict.get('password').cget('text'))
             self.server_names.set(self.user.data_dict.get('server_id').cget('text'))
+            id = list(filter(lambda x: x[1] == self.user.data_dict.get('server_id').cget('text'),self.server_id_names))[0][0]
+            self.server_id = id
             pass
 
         self.validation_text =ctk.CTkLabel(master=self, text='', font=('Century Gothic bold',15), text_color='red')

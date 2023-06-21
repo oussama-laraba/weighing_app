@@ -34,7 +34,7 @@ class  ProductModel():
         query= 'SELECT'
         for column in columns:
             query+= ' '+column+' ,'
-        query = query[:-1] + ' FROM PRODUCT'
+        query = query[:-1] + ' FROM product'
         
         if conditions:
             query+= ' WHERE'
@@ -71,8 +71,13 @@ class  ProductModel():
 
     def delete_all_query(self):
         cursor = self.db.cursor()
-        delete_query = 'DELETE FROM PRODUCT;'
+        
+        delete_query = 'DELETE FROM stock_location;'
         cursor.execute(delete_query)
+
+        delete_query = 'DELETE FROM product;'
+        cursor.execute(delete_query)
+        
         self.db.commit()
         cursor.close()
 
@@ -118,7 +123,7 @@ class ProductUomModel():
     def delete_query(self, conditions= None):
         cursor = self.db.cursor()
         
-        delete_query = 'DELETE FROM PRODUCT'
+        delete_query = 'DELETE FROM product'
         if conditions:
             delete_query+= ' WHERE'
             for condition in conditions.items():
@@ -151,8 +156,8 @@ class StockLocationModel():
 
     def create_query(self, data):
         cursor = self.db.cursor()
-        create_query = 'INSERT INTO stock_location (server_id, location_id, product_id, quantity)\
-                                VALUES ({},{},{},{})'.format(data['server_id'],  data['location_id'], data['product_id'], data['quantity'])
+        create_query = 'INSERT INTO stock_location (location_id, product_id, quantity)\
+                                VALUES ({},{},{})'.format(data['location_id'], data['product_id'], data['quantity'])
         
         cursor.execute(create_query)
         id= cursor.lastrowid
@@ -175,15 +180,15 @@ class StockLocationModel():
         return records
     
 
-    def delete(self, product_odoo_id, location_odoo_id, server_id):
-        cursor = self.db.cursor()
-        delete_query = 'DELETE FROM stock_location AS SL\
-                        INNER JOIN product AS P ON SL.product_id = P.id AND P.odoo_id = {}\
-                        INNER JOIN location AS L ON L.id = SL.location_id AND L.odoo_id = {} AND SL.server_id = {}\
-                        ;'.format(product_odoo_id, location_odoo_id, server_id)
-        cursor.execute(delete_query)
-        self.db.commit()
-        cursor.close()
+    # def delete(self, product_odoo_id, location_odoo_id, server_id):
+    #     cursor = self.db.cursor()
+    #     delete_query = 'DELETE FROM stock_location AS SL\
+    #                     INNER JOIN product AS P ON SL.product_id = P.id AND P.odoo_id = {}\
+    #                     INNER JOIN location AS L ON L.id = SL.location_id AND L.odoo_id = {} AND SL.server_id = {}\
+    #                     ;'.format(product_odoo_id, location_odoo_id, server_id)
+    #     cursor.execute(delete_query)
+    #     self.db.commit()
+    #     cursor.close()
 
 
     def delete_all(self):

@@ -29,7 +29,7 @@ class ServerModel():
         cursor = self.db.cursor()
         
         cursor.execute('INSERT INTO server\
-                    (URL, PORT, DATABASE_NAME)\
+                    (url, port, database_name)\
                     VALUES ("{}", {}, "{}");'.format(
                         data.get('url'),
                         data.get('port'),
@@ -44,8 +44,8 @@ class ServerModel():
 
     def update_query(self, data):
         cursor = self.db.cursor()
-        cursor.execute('UPDATE SERVER SET\
-                        URL = "{}" , PORT = {}, DATABASE_NAME = "{}"\
+        cursor.execute('UPDATE server SET\
+                        url = "{}" , port = {}, database_name = "{}"\
                         WHERE id = {};'.format(
                             data.get('url'),
                             data.get('port'),
@@ -58,6 +58,6 @@ class ServerModel():
 
     def delete_query(self, id):
         cursor = self.db.cursor()
-        cursor.execute(f'DELETE FROM SERVER WHERE ID = {id};')
+        cursor.execute(f'DELETE FROM server WHERE id = {id};')
         cursor.close()
         self.db.commit()

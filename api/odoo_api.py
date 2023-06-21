@@ -150,7 +150,7 @@ class OdooConnection:
 
         """
         args = [vals]
-        ret = self.call_method (model, 'create', args) 
+        ret = self.call_method(model, 'create', args) 
         return ret
 
     

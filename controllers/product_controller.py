@@ -32,6 +32,7 @@ class ProductController():
 
 
     def location_load(self, product_view):
+        
         location_id = self.location_model.select_query(columns=['odoo_id','location_name'])
         self.location_values_id = { location[1]:location[0] for location in location_id }
         locations = list(self.location_values_id.keys())
@@ -62,6 +63,6 @@ class ProductController():
             data = self.model.get_data(location_id)
         if data:
             for idx,instance in enumerate(data):
-                instance_dict = {'id': instance[0],'ODOO_ID': instance[1], 'PRODUCT':instance[2]}
+                instance_dict = {'id': instance[0],'ODOO_ID': instance[1], 'PRODUCT':instance[2], 'type de suivi':instance[3]}
                 color, fg_color = ('green','#e0e0e0') if idx%2 == 1 else ('blue violet', '#C0C0C0')
                 product_view.product_list.create_elements(instance_dict, color, fg_color)

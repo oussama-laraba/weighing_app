@@ -2,7 +2,7 @@
 import tkinter as tk
 import customtkinter
 from models.database_connection import DbConnection
-from api.stock import ApiConnection
+from api.consume_api import ApiConnection
 
 from models.lot import LotFrame
 
@@ -114,21 +114,24 @@ class App2(customtkinter.CTk):
         self.db = DbConnection().db
         self.api = ApiConnection(db=self.db)
         self.refresher = Refresh(api= self.api, db= self.db)
-        ###
-        
-        self.stockable_product_frame = ProductController(view_master=self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh_product).product_frame
-        self.stockable_product_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
-        
-        ###
+
+
         self.user_frame = None
         self.server_frame = None
         self.lot_frame = None
         self.stock_location_frame = None
-        
+        self.stockable_product_frame = None
         self.main_controller = None
         self.main_frame = None
 
+        ###
         
+        self.main_controller = MainController(view_master=self, db=self.db, api=self.api)
+        self.main_frame = self.main_controller.main_frame
+        self.main_frame.grid(row=1, column=1, sticky="nsew")
+        self.main_controller.open_thread()
+
+        ###
         # self.main_controller = MainController(view_master=self, db=self.db, api=self.api)
         # self.main_frame = self.main_controller.main_frame
         # self.main_frame.grid(row=1, column=1, sticky="nsew")
@@ -202,6 +205,7 @@ class App2(customtkinter.CTk):
 
 
     def close_stock_frames(self):
+        
         if self.stock_location_frame:
             self.stock_location_frame.destroy()
 
@@ -213,7 +217,7 @@ class App2(customtkinter.CTk):
         self.close_product_frames()
 
         if name == "location":
-            self.stock_location_frame = LocationController(view_master = self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh_location).stock_location_frame
+            self.stock_location_frame = LocationController(view_master = self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh).stock_location_frame
             self.stock_location_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
             if self.stock_location_frame:
@@ -231,7 +235,7 @@ class App2(customtkinter.CTk):
         self.close_stock_frames()
         
         if name == "stockable_product":
-            self.stockable_product_frame = ProductController(view_master=self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh_product).product_frame
+            self.stockable_product_frame = ProductController(view_master=self, db=self.db, api=self.api, refresh_db_function= self.refresher.refresh).product_frame
             self.stockable_product_frame.grid(row=1, column=1, padx=15, pady=5, sticky="nsew")
         else:
             if self.stockable_product_frame:

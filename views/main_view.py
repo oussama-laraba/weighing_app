@@ -19,7 +19,7 @@ class ActionFrame(ctk.CTkFrame):
         self.company_selection_frame.grid(row=0, column=0, padx=15, pady=(10,10))
         self.company_selection_frame.grid_columnconfigure(0, weight=1)
         
-        self.company_values = []
+        self.company_values_id = []
         self.comany_label = ctk.CTkLabel(self.company_selection_frame, text="Company")
         self.comany_label.grid(row=0, column=0, sticky="w")
         self.company = ctk.CTkOptionMenu(self.company_selection_frame, values=['NO COMPANIES'],
